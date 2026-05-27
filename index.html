@@ -30,6 +30,34 @@
       display: flex; gap: 12px; margin-top: 8px;
       font-size: 0.75rem; color: var(--muted);
     }
+    .toolbar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 32px; background: #141722;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .btn {
+      background: #1a1d27; color: var(--muted);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 14px; font-size: 0.82rem; cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .btn:hover { background: #2a2d3a; color: var(--text); }
+    .btn.active { background: #1e3a5f; color: #93c5fd; border-color: #2a4a7f; }
+    .hist-controls {
+      display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .hist-controls.visible { display: flex; }
+    .hist-controls label { font-size: 0.82rem; color: var(--muted); }
+    input[type=date] {
+      background: #1a1d27; border: 1px solid var(--border);
+      color: var(--text); border-radius: 6px;
+      padding: 5px 10px; font-size: 0.82rem;
+      color-scheme: dark;
+    }
+    .tag-hist {
+      font-size: 0.72rem; color: #f59e0b;
+      background: #451a03; padding: 2px 8px; border-radius: 10px;
+    }
     main { padding: 32px; max-width: 1100px; margin: 0 auto; }
     .card {
       background: var(--surface);
@@ -72,14 +100,14 @@
     .spin      { width:32px; height:32px; border:3px solid var(--border); border-top-color:#60a5fa; border-radius:50%; animation:s .8s linear infinite; }
     @keyframes s { to { transform:rotate(360deg); } }
     .err { padding:40px; text-align:center; color:#ef4444; line-height:1.8; }
-    @media(max-width:640px){ main{padding:12px;} header{padding:16px;} td,th{padding:10px 12px;} }
+    @media(max-width:640px){ main{padding:12px;} header{padding:16px;} toolbar{padding:12px;} td,th{padding:10px 12px;} }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>Reputação de Domínio · E-mail Marketing</h1>
-  <p>Grupo JCPM · Google Postmaster Tools</p>
+  <h1>Reputação de Domínios de e-mail</h1>
+  <p>Grupo JCPM · Google Postmaster</p>
   <div class="meta">
     <span id="ref-date">Carregando...</span>
     <span>·</span>
@@ -89,6 +117,18 @@
   </div>
 </header>
 
+<div class="toolbar">
+  <button class="btn active" id="btn-atual" onclick="switchMode('atual')">Dados Atuais</button>
+  <button class="btn" id="btn-hist" onclick="switchMode('historico')">Histórico</button>
+  <div class="hist-controls" id="hist-controls">
+    <span class="tag-hist">Histórico</span>
+    <label>Data:
+      <input type="date" id="hist-date" max="">
+    </label>
+    <button class="btn active" onclick="loadHistory()">Buscar</button>
+  </div>
+</div>
+
 <main>
   <div class="card" id="container">
     <div class="center"><div class="spin"></div><span>Carregando dados...</span></div>
@@ -96,23 +136,90 @@
 </main>
 
 <script>
-  const SHEET_ID = '1PdsjYfnypYEnEDIklwuXItfvQfkjWuCZ6CDSA5CViYI';
+  const SHEET_ID   = '1PdsjYfnypYEnEDIklwuXItfvQfkjWuCZ6CDSA5CViYI';
+  const HIST_SHEET = 'Historico'; // nome da aba de histórico na planilha
 
   const C = { DATA:0, DOMINIO:1, SHOPPING:2, SPAM:3, REP:4, DKIM:5, SPF:6, DMARC:7, ULT:13 };
 
+  let currentMode = 'atual';
+
+  // Define o max do date picker como hoje
+  document.getElementById('hist-date').max = new Date().toISOString().split('T')[0];
+
+  function switchMode(mode) {
+    currentMode = mode;
+    document.getElementById('btn-atual').classList.toggle('active', mode === 'atual');
+    document.getElementById('btn-hist').classList.toggle('active', mode === 'historico');
+    document.getElementById('hist-controls').classList.toggle('visible', mode === 'historico');
+    if (mode === 'atual') load();
+  }
+
+  // Converte "Date(2024,0,15)" ou string ISO para DD/MM/AAAA
+  function fmtDate(val) {
+    if (!val) return '—';
+    const m = String(val).match(/^Date\((\d+),(\d+),(\d+)\)$/);
+    if (m) {
+      const d = new Date(+m[1], +m[2], +m[3]);
+      return d.toLocaleDateString('pt-BR');
+    }
+    const d = new Date(val);
+    if (!isNaN(d)) return d.toLocaleDateString('pt-BR');
+    return val;
+  }
+
+  // Converte YYYY-MM-DD (input date) para DD/MM/AAAA
+  function fmtInputDate(str) {
+    const [y, m, d] = str.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  async function fetchSheet(sheet, tq) {
+    let url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&headers=1`;
+    if (tq) url += `&tq=${encodeURIComponent(tq)}`;
+    const res  = await fetch(url);
+    const text = await res.text();
+    const m    = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);\s*$/);
+    if (!m) throw new Error('Formato inesperado. Verifique se a planilha está compartilhada.');
+    const json = JSON.parse(m[1]);
+    if (json.status !== 'ok') throw new Error(json.errors?.[0]?.message || 'Erro na planilha.');
+    return json.table.rows.map(r => r.c.map(c => c?.v ?? c?.f ?? ''));
+  }
+
+  function showLoading() {
+    document.getElementById('container').innerHTML =
+      '<div class="center"><div class="spin"></div><span>Carregando dados...</span></div>';
+  }
+
+  function showError(msg) {
+    document.getElementById('container').innerHTML =
+      `<div class="err">❌ ${msg}<br><small>Confirme que a planilha está compartilhada como "Qualquer pessoa com o link pode ver".</small></div>`;
+  }
+
   async function load() {
+    showLoading();
     try {
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Ultimo_Resultado&headers=1`;
-      const res  = await fetch(url);
-      const text = await res.text();
-      const m    = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);\s*$/);
-      if (!m) throw new Error('Formato inesperado. Verifique se a planilha está compartilhada.');
-      const json = JSON.parse(m[1]);
-      if (json.status !== 'ok') throw new Error(json.errors?.[0]?.message || 'Erro na planilha.');
-      render(json.table.rows.map(r => r.c.map(c => c?.v ?? c?.f ?? '')));
+      const rows = await fetchSheet('Ultimo_Resultado');
+      render(rows);
     } catch(e) {
-      document.getElementById('container').innerHTML =
-        `<div class="err">❌ ${e.message}<br><small>Confirme que a planilha está compartilhada como "Qualquer pessoa com o link pode ver".</small></div>`;
+      showError(e.message);
+    }
+  }
+
+  async function loadHistory() {
+    const dateVal = document.getElementById('hist-date').value;
+    if (!dateVal) { alert('Selecione uma data para buscar o histórico.'); return; }
+    showLoading();
+    try {
+      const tq   = `SELECT * WHERE A=date '${dateVal}'`;
+      const rows = await fetchSheet(HIST_SHEET, tq);
+      if (!rows.length) {
+        showError(`Nenhum dado encontrado para ${fmtInputDate(dateVal)}.<br>Verifique se a aba "${HIST_SHEET}" existe e contém dados para essa data.`);
+        return;
+      }
+      render(rows);
+      document.getElementById('load-time').textContent = `Histórico de ${fmtInputDate(dateVal)}`;
+    } catch(e) {
+      showError(e.message);
     }
   }
 
@@ -135,9 +242,12 @@
   }
 
   function render(rows) {
-    document.getElementById('ref-date').textContent  = rows[0]?.[C.DATA] ? `Referência: ${rows[0][C.DATA]}` : '—';
+    const dataRef = fmtDate(rows[0]?.[C.DATA]);
+    document.getElementById('ref-date').textContent  = dataRef !== '—' ? `Referência: ${dataRef}` : '—';
     document.getElementById('dom-count').textContent = `${rows.length} domínios`;
-    document.getElementById('load-time').textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR')}`;
+    if (currentMode === 'atual') {
+      document.getElementById('load-time').textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR')}`;
+    }
 
     document.getElementById('container').innerHTML = `
       <table>
@@ -161,14 +271,14 @@
               <td>${pct(r[C.DKIM])}</td>
               <td>${pct(r[C.SPF])}</td>
               <td>${pct(r[C.DMARC])}</td>
-              <td class="dim">${r[C.ULT] || '—'}</td>
+              <td class="dim">${fmtDate(r[C.ULT])}</td>
             </tr>`).join('')}
         </tbody>
       </table>`;
   }
 
   load();
-  setInterval(load, 5 * 60 * 1000);
+  setInterval(() => { if (currentMode === 'atual') load(); }, 5 * 60 * 1000);
 </script>
 </body>
 </html>

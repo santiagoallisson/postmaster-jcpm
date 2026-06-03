@@ -91,4 +91,294 @@
     .alta  { color:#22c55e; background:#14532d; } .alta::before  { background:#22c55e; }
     .media { color:#f59e0b; background:#451a03; } .media::before { background:#f59e0b; }
     .baixa { color:#f97316; background:#431407; } .baixa::before { background:#f97316; }
-    .ruim  { color:#ef4444; background:#450a
+    .ruim  { color:#ef4444; background:#450a0a; } .ruim::before  { background:#ef4444; }
+    .nd    { color:var(--muted); background:rgba(148,163,184,.1); } .nd::before { background:var(--muted); }
+    .spam-ok   { color: var(--text); }
+    .spam-alto { color:#ef4444; background:#450a0a; padding:3px 8px; border-radius:6px; font-weight:700; }
+    .dim       { color: var(--muted); font-size: 0.8rem; }
+    .center    { display:flex; align-items:center; justify-content:center; padding:80px; flex-direction:column; gap:16px; color:var(--muted); }
+    .spin      { width:32px; height:32px; border:3px solid var(--border); border-top-color:#60a5fa; border-radius:50%; animation:s .8s linear infinite; }
+    @keyframes s { to { transform:rotate(360deg); } }
+    .err { padding:40px; text-align:center; color:#ef4444; line-height:1.8; }
+    
+    /* === ESTILOS DO STATUS === */
+    .status-up { color: #22c55e; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
+    .status-down { color: #ef4444; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
+    .status-date { color: var(--muted); font-size: 0.72rem; font-weight: 400; }
+
+    @media(max-width:640px){ main{padding:12px;} header{padding:16px;} toolbar{padding:12px;} td,th{padding:10px 12px;} }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Reputação de Domínios de e-mail</h1>
+  <p>Grupo JCPM · Google Postmaster</p>
+  <div class="meta">
+    <span id="ref-date">Carregando...</span>
+    <span>·</span>
+    <span id="dom-count"></span>
+    <span>·</span>
+    <span id="load-time"></span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button class="btn active" id="btn-atual" onclick="switchMode('atual')">Dados Atuais</button>
+  <button class="btn" id="btn-hist" onclick="switchMode('historico')">Histórico</button>
+  <div class="hist-controls" id="hist-controls">
+    <span class="tag-hist">Histórico</span>
+    <label>Data:
+      <input type="date" id="hist-date" max="">
+    </label>
+    <button class="btn active" onclick="loadHistory()">Buscar</button>
+  </div>
+</div>
+
+<main>
+  <div class="card" id="container">
+    <div class="center"><div class="spin"></div><span>Carregando dados...</span></div>
+  </div>
+</main>
+
+<script>
+  const SHEET_ID   = '1PdsjYfnypYEnEDIklwuXItfvQfkjWuCZ6CDSA5CViYI';
+  const HIST_SHEET = 'Historico'; 
+
+  // Mapeamento original das colunas (sem precisar criar colunas extras)
+  const C = { DATA:0, DOMINIO:1, SHOPPING:2, SPAM:3, REP:4, DKIM:5, SPF:6, DMARC:7, ULT:13 };
+
+  let currentMode = 'atual';
+  let trendsMap = {}; // Objeto que vai armazenar a tendência calculada de cada shopping
+
+  document.getElementById('hist-date').max = new Date().toISOString().split('T')[0];
+
+  function switchMode(mode) {
+    currentMode = mode;
+    document.getElementById('btn-atual').classList.toggle('active', mode === 'atual');
+    document.getElementById('btn-hist').classList.toggle('active', mode === 'historico');
+    document.getElementById('hist-controls').classList.toggle('visible', mode === 'historico');
+    if (mode === 'atual') load();
+  }
+
+  function fmtDate(val) {
+    if (!val) return '—';
+    const m = String(val).match(/^Date\((\d+),(\d+),(\d+)\)$/);
+    if (m) {
+      const d = new Date(+m[1], +m[2], +m[3]);
+      return d.toLocaleDateString('pt-BR');
+    }
+    const d = new Date(val);
+    if (!isNaN(d)) return d.toLocaleDateString('pt-BR');
+    return val;
+  }
+
+  function fmtInputDate(str) {
+    const [y, m, d] = str.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  async function fetchSheet(sheet, tq) {
+    let url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&headers=1`;
+    if (tq) url += `&tq=${encodeURIComponent(tq)}`;
+    const res  = await fetch(url);
+    const text = await res.text();
+    const m    = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);\s*$/);
+    if (!m) throw new Error('Formato inesperado. Verifique permissões ou bloqueios do navegador.');
+    const json = JSON.parse(m[1]);
+    if (json.status !== 'ok') throw new Error(json.errors?.[0]?.message || 'Erro na planilha.');
+    return json.table.rows.map(r => r.c.map(c => c?.v ?? c?.f ?? ''));
+  }
+
+  function showLoading() {
+    document.getElementById('container').innerHTML =
+      '<div class="center"><div class="spin"></div><span>Carregando dados...</span></div>';
+  }
+
+  function showError(msg) {
+    document.getElementById('container').innerHTML =
+      `<div class="err">❌ ${msg}<br><small>Confirme que a planilha está compartilhada e verifique bloqueios de rede.</small></div>`;
+  }
+
+  // === NOVA FUNÇÃO: Calcula as tendências vasculhando a aba Histórico ===
+  function buildTrends(histRows) {
+    trendsMap = {};
+    const histMap = {};
+    
+    // 1. Agrupa os registros por Shopping e formata a Data para ordenação
+    histRows.forEach(r => {
+      const dateRaw = r[C.DATA];
+      const shopping = r[C.SHOPPING] || r[C.DOMINIO];
+      const rep = String(r[C.REP] || '').toUpperCase().trim();
+      
+      if (!shopping || !dateRaw) return;
+      if (!histMap[shopping]) histMap[shopping] = [];
+      
+      let d = new Date(0);
+      const m = String(dateRaw).match(/^Date\((\d+),(\d+),(\d+)\)$/);
+      if (m) { d = new Date(+m[1], +m[2], +m[3]); } 
+      else { d = new Date(dateRaw); }
+      
+      histMap[shopping].push({ date: d, rep: rep, rawDate: dateRaw });
+    });
+
+    const score = { 'ALTA': 4, 'MÉDIA': 3, 'MEDIA': 3, 'BAIXA': 2, 'RUIM': 1 };
+    
+    // 2. Analisa cada shopping individualmente
+    for (const shop in histMap) {
+      // Ordena do mais recente para o mais antigo
+      const history = histMap[shop].sort((a, b) => b.date - a.date);
+      if (history.length < 2) continue;
+
+      const currentRep = history[0].rep;
+      let changeRecord = null;
+      let previousRep = null;
+
+      // 3. Volta no tempo até achar um dia em que a reputação era diferente
+      for (let i = 1; i < history.length; i++) {
+        const pastRep = history[i].rep;
+        if (pastRep !== currentRep && pastRep !== 'ND' && pastRep !== 'SEM DADOS' && pastRep !== '') {
+          changeRecord = history[i - 1]; // O dia da quebra (a primeira vez que a reputação ATUAL apareceu após a antiga)
+          previousRep = pastRep;
+          break;
+        }
+      }
+
+      // 4. Se houve mudança, checa se a nota subiu ou desceu
+      if (changeRecord && previousRep) {
+        const currScore = score[currentRep] || 0;
+        const prevScore = score[previousRep] || 0;
+        
+        if (currScore > 0 && prevScore > 0 && currScore !== prevScore) {
+          trendsMap[shop] = {
+            direction: currScore > prevScore ? 'up' : 'down',
+            date: changeRecord.rawDate
+          };
+        }
+      }
+    }
+  }
+
+  async function load() {
+    showLoading();
+    try {
+      // Baixa os Dados Atuais e o Histórico simultaneamente
+      const [atualRows, histRows] = await Promise.all([
+        fetchSheet('Ultimo_Resultado'),
+        fetchSheet(HIST_SHEET)
+      ]);
+      
+      // Processa a inteligência do status
+      buildTrends(histRows);
+      
+      // Renderiza a tela
+      render(atualRows);
+    } catch(e) {
+      console.error(e);
+      showError(e.message);
+    }
+  }
+
+  async function loadHistory() {
+    const dateVal = document.getElementById('hist-date').value;
+    if (!dateVal) { alert('Selecione uma data para buscar o histórico.'); return; }
+    showLoading();
+    try {
+      const tq   = `SELECT * WHERE A=date '${dateVal}'`;
+      const rows = await fetchSheet(HIST_SHEET, tq);
+      if (!rows.length) {
+        showError(`Nenhum dado encontrado para ${fmtInputDate(dateVal)}.<br>Verifique se a aba "${HIST_SHEET}" existe e contém dados para essa data.`);
+        return;
+      }
+      render(rows);
+      document.getElementById('load-time').textContent = `Histórico de ${fmtInputDate(dateVal)}`;
+    } catch(e) {
+      console.error(e);
+      showError(e.message);
+    }
+  }
+
+  function badge(rep) {
+    const m = { ALTA:['alta','ALTA'], MEDIA:['media','MÉDIA'], BAIXA:['baixa','BAIXA'], RUIM:['ruim','RUIM'] };
+    const [cls, lbl] = m[rep] || ['nd', rep || 'SEM DADOS'];
+    return `<span class="badge ${cls}">${lbl}</span>`;
+  }
+
+  function spam(val) {
+    if (val === '' || val == null) return '<span class="dim">—</span>';
+    const n = parseFloat(val);
+    const fmt = n.toFixed(4) + '%';
+    return n > 0.3 ? `<span class="spam-alto">⚠ ${fmt}</span>` : `<span class="spam-ok">${fmt}</span>`;
+  }
+
+  function pct(val) {
+    const n = parseFloat(val);
+    return isNaN(n) ? '<span class="dim">—</span>' : `<span class="dim">${n.toFixed(2)}%</span>`;
+  }
+
+  // === RENDERIZAÇÃO DO STATUS DINÂMICO ===
+  function renderStatus(trendObj) {
+    if (!trendObj) return '<span class="dim">—</span>';
+    
+    const dataFormatada = fmtDate(trendObj.date);
+    const htmlData = dataFormatada !== '—' ? `<span class="status-date">${dataFormatada}</span>` : '';
+
+    if (trendObj.direction === 'up') {
+      return `<div class="status-up">⬆️ ${htmlData}</div>`;
+    } else if (trendObj.direction === 'down') {
+      return `<div class="status-down">⬇️ ${htmlData}</div>`;
+    }
+    
+    return '<span class="dim">—</span>';
+  }
+
+  function render(rows) {
+    const dataRef = fmtDate(rows[0]?.[C.DATA]);
+    document.getElementById('ref-date').textContent  = dataRef !== '—' ? `Referência: ${dataRef}` : '—';
+    document.getElementById('dom-count').textContent = `${rows.length} domínios`;
+    
+    if (currentMode === 'atual') {
+      document.getElementById('load-time').textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR')}`;
+    }
+
+    document.getElementById('container').innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Shopping</th>
+            <th>Status</th>
+            <th>Reputação</th>
+            <th>Taxa de Spam</th>
+            <th>DKIM</th>
+            <th>SPF</th>
+            <th>DMARC</th>
+            <th>Última atualização Google</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => {
+            const shopName = r[C.SHOPPING] || r[C.DOMINIO];
+            // Se estivermos visualizando o passado, o Status de alteração fica limpo para não confundir.
+            const trend = (currentMode === 'atual') ? trendsMap[shopName] : null; 
+            
+            return `
+            <tr>
+              <td class="name">${shopName}</td>
+              <td>${renderStatus(trend)}</td>
+              <td>${badge(r[C.REP])}</td>
+              <td>${spam(r[C.SPAM])}</td>
+              <td>${pct(r[C.DKIM])}</td>
+              <td>${pct(r[C.SPF])}</td>
+              <td>${pct(r[C.DMARC])}</td>
+              <td class="dim">${fmtDate(r[C.ULT])}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  load();
+  setInterval(() => { if (currentMode === 'atual') load(); }, 5 * 60 * 1000);
+</script>
+</body>
+</html>

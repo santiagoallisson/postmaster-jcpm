@@ -100,6 +100,12 @@
     .spin      { width:32px; height:32px; border:3px solid var(--border); border-top-color:#60a5fa; border-radius:50%; animation:s .8s linear infinite; }
     @keyframes s { to { transform:rotate(360deg); } }
     .err { padding:40px; text-align:center; color:#ef4444; line-height:1.8; }
+    
+    /* === ESTILOS DO STATUS === */
+    .status-up { color: #22c55e; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
+    .status-down { color: #ef4444; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
+    .status-date { color: var(--muted); font-size: 0.72rem; font-weight: 400; }
+
     @media(max-width:640px){ main{padding:12px;} header{padding:16px;} toolbar{padding:12px;} td,th{padding:10px 12px;} }
   </style>
 </head>
@@ -137,13 +143,19 @@
 
 <script>
   const SHEET_ID   = '1PdsjYfnypYEnEDIklwuXItfvQfkjWuCZ6CDSA5CViYI';
-  const HIST_SHEET = 'Historico'; // nome da aba de histórico na planilha
+  const HIST_SHEET = 'Historico'; 
 
-  const C = { DATA:0, DOMINIO:1, SHOPPING:2, SPAM:3, REP:4, DKIM:5, SPF:6, DMARC:7, ULT:13 };
+  // Ajuste os índices TENDENCIA e DATA_TENDENCIA de acordo com as colunas da sua planilha.
+  // Lembrando que A=0, B=1, C=2... Se não houver dados, o sistema mostrará um traço (—).
+  const C = { 
+    DATA:0, DOMINIO:1, SHOPPING:2, SPAM:3, REP:4, DKIM:5, SPF:6, DMARC:7, 
+    TENDENCIA:8,       
+    DATA_TENDENCIA:9,  
+    ULT:13 
+  };
 
   let currentMode = 'atual';
 
-  // Define o max do date picker como hoje
   document.getElementById('hist-date').max = new Date().toISOString().split('T')[0];
 
   function switchMode(mode) {
@@ -154,7 +166,6 @@
     if (mode === 'atual') load();
   }
 
-  // Converte "Date(2024,0,15)" ou string ISO para DD/MM/AAAA
   function fmtDate(val) {
     if (!val) return '—';
     const m = String(val).match(/^Date\((\d+),(\d+),(\d+)\)$/);
@@ -167,12 +178,12 @@
     return val;
   }
 
-  // Converte YYYY-MM-DD (input date) para DD/MM/AAAA
   function fmtInputDate(str) {
     const [y, m, d] = str.split('-');
     return `${d}/${m}/${y}`;
   }
 
+  // A função fetchSheet permanece 100% igual ao seu original
   async function fetchSheet(sheet, tq) {
     let url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&headers=1`;
     if (tq) url += `&tq=${encodeURIComponent(tq)}`;
@@ -201,6 +212,7 @@
       const rows = await fetchSheet('Ultimo_Resultado');
       render(rows);
     } catch(e) {
+      console.error(e); // Adicionado para exibir o erro real no console (F12)
       showError(e.message);
     }
   }
@@ -219,6 +231,7 @@
       render(rows);
       document.getElementById('load-time').textContent = `Histórico de ${fmtInputDate(dateVal)}`;
     } catch(e) {
+      console.error(e);
       showError(e.message);
     }
   }
@@ -241,6 +254,24 @@
     return isNaN(n) ? '<span class="dim">—</span>' : `<span class="dim">${n.toFixed(2)}%</span>`;
   }
 
+  // Lógica segura: se a planilha ainda não tiver dados ou as colunas não existirem, retorna traço.
+  function renderStatus(tendencia, data) {
+    if (!tendencia) return '<span class="dim">—</span>';
+    
+    const strTrend = String(tendencia).toLowerCase().trim();
+    const dataFormatada = fmtDate(data);
+    const htmlData = dataFormatada !== '—' ? `<span class="status-date">${dataFormatada}</span>` : '';
+
+    if (strTrend.includes('subindo') || strTrend.includes('up') || strTrend === 'melhorou') {
+      return `<div class="status-up">⬆️ ${htmlData}</div>`;
+    } 
+    else if (strTrend.includes('descendo') || strTrend.includes('down') || strTrend === 'piorou') {
+      return `<div class="status-down">⬇️ ${htmlData}</div>`;
+    }
+    
+    return '<span class="dim">—</span>';
+  }
+
   function render(rows) {
     const dataRef = fmtDate(rows[0]?.[C.DATA]);
     document.getElementById('ref-date').textContent  = dataRef !== '—' ? `Referência: ${dataRef}` : '—';
@@ -254,6 +285,7 @@
         <thead>
           <tr>
             <th>Shopping</th>
+            <th>Status</th>
             <th>Reputação</th>
             <th>Taxa de Spam</th>
             <th>DKIM</th>
@@ -266,6 +298,7 @@
           ${rows.map(r => `
             <tr>
               <td class="name">${r[C.SHOPPING] || r[C.DOMINIO]}</td>
+              <td>${renderStatus(r[C.TENDENCIA], r[C.DATA_TENDENCIA])}</td>
               <td>${badge(r[C.REP])}</td>
               <td>${spam(r[C.SPAM])}</td>
               <td>${pct(r[C.DKIM])}</td>

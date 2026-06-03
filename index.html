@@ -3,154 +3,285 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Postmaster Dashboard – JCPM</title>
+  <title>Postmaster Dashboard · JCPM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #0f1117;
-      --surface: #1a1d27;
-      --border: #2a2d3a;
-      --text: #e2e8f0;
-      --muted: #94a3b8;
+      --bg-primary: #ffffff;
+      --bg-secondary: #f7f6f3;
+      --bg-tertiary: #efede8;
+      --bg-info: #e6f1fb;
+      --text-primary: #1a1917;
+      --text-secondary: #5f5e5a;
+      --text-tertiary: #888780;
+      --text-info: #185fa5;
+      --border-light: rgba(26,25,23,0.1);
+      --border-med: rgba(26,25,23,0.2);
+      --border-info: #378add;
+      --accent: #1a1917;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1e1d1b;
+        --bg-secondary: #272623;
+        --bg-tertiary: #302f2c;
+        --bg-info: #0c2d50;
+        --text-primary: #f0eeea;
+        --text-secondary: #b4b2a9;
+        --text-tertiary: #888780;
+        --text-info: #85b7eb;
+        --border-light: rgba(240,238,234,0.1);
+        --border-med: rgba(240,238,234,0.2);
+        --border-info: #378add;
+        --accent: #f0eeea;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
       min-height: 100vh;
+      padding: 2rem 1rem 4rem;
     }
-    header {
-      background: linear-gradient(135deg, #1e3a5f, #0f2340);
-      padding: 24px 32px;
-      border-bottom: 1px solid var(--border);
+
+    .page { max-width: 1100px; margin: 0 auto; }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 2rem; padding-bottom: 1.25rem;
+      border-bottom: 0.5px solid var(--border-light);
     }
-    header h1 { font-size: 1.4rem; font-weight: 700; }
-    header p  { color: #93c5fd; font-size: 0.85rem; margin-top: 4px; }
-    .meta {
-      display: flex; gap: 12px; margin-top: 8px;
-      font-size: 0.75rem; color: var(--muted);
+    .header-logo {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px; color: var(--text-secondary); font-style: italic;
     }
+    .header-tag {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-tertiary);
+      border: 0.5px solid var(--border-med); padding: 3px 10px; border-radius: 20px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--bg-secondary); border-radius: var(--radius-xl);
+      padding: 2.25rem 2.5rem 2rem; margin-bottom: 2rem;
+      border: 0.5px solid var(--border-light); position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content: ''; position: absolute; top: -60px; right: -60px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: var(--bg-tertiary); opacity: 0.7; pointer-events: none;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-secondary);
+      border: 0.5px solid var(--border-med); padding: 4px 12px;
+      border-radius: 20px; margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 28px; font-weight: 600; line-height: 1.2;
+      margin-bottom: 0.65rem; position: relative; z-index: 1;
+    }
+    .hero h1 em { font-style: italic; color: var(--text-secondary); }
+    .hero p {
+      font-size: 14px; color: var(--text-secondary); line-height: 1.65;
+      max-width: 560px; position: relative; z-index: 1;
+    }
+    .hero-meta {
+      display: flex; gap: 24px; margin-top: 1.25rem;
+      flex-wrap: wrap; position: relative; z-index: 1;
+    }
+    .hero-stat { display: flex; flex-direction: column; }
+    .hero-stat-val {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1;
+    }
+    .hero-stat-lbl { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+
+    /* ── NAV PILLS & TOOLBAR ── */
     .toolbar {
-      display: flex; align-items: center; gap: 12px;
-      padding: 14px 32px; background: #141722;
-      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 1.75rem;
     }
-    .btn {
-      background: #1a1d27; color: var(--muted);
-      border: 1px solid var(--border); border-radius: 6px;
-      padding: 6px 14px; font-size: 0.82rem; cursor: pointer;
-      transition: background .15s, color .15s;
+    .pill {
+      font-family: 'Open Sans', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 8px 18px; border-radius: 20px; cursor: pointer;
+      border: 0.5px solid var(--border-med); background: var(--bg-primary);
+      color: var(--text-secondary); transition: all 0.18s ease;
+      display: inline-flex; align-items: center; gap: 6px;
     }
-    .btn:hover { background: #2a2d3a; color: var(--text); }
-    .btn.active { background: #1e3a5f; color: #93c5fd; border-color: #2a4a7f; }
+    .pill:hover { background: var(--bg-secondary); color: var(--text-primary); }
+    .pill.active { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+    .pill i { font-size: 15px; }
+
     .hist-controls {
-      display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+      display: none; align-items: center; gap: 8px; margin-left: auto;
     }
     .hist-controls.visible { display: flex; }
-    .hist-controls label { font-size: 0.82rem; color: var(--muted); }
-    input[type=date] {
-      background: #1a1d27; border: 1px solid var(--border);
-      color: var(--text); border-radius: 6px;
-      padding: 5px 10px; font-size: 0.82rem;
-      color-scheme: dark;
+    .date-picker {
+      background: var(--bg-primary); border: 0.5px solid var(--border-med);
+      color: var(--text-primary); border-radius: 20px;
+      padding: 7px 14px; font-family: 'Open Sans'; font-size: 12.5px; outline: none;
+      color-scheme: light dark;
     }
-    .tag-hist {
-      font-size: 0.72rem; color: #f59e0b;
-      background: #451a03; padding: 2px 8px; border-radius: 10px;
-    }
-    main { padding: 32px; max-width: 1100px; margin: 0 auto; }
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    table { width: 100%; border-collapse: collapse; }
-    thead th {
-      background: #141722;
-      padding: 12px 16px;
-      text-align: left;
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border);
-    }
-    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: rgba(255,255,255,.03); }
-    td { padding: 14px 16px; font-size: 0.88rem; }
-    .name { font-weight: 600; }
-    .badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 10px; border-radius: 20px;
-      font-size: 0.72rem; font-weight: 700; letter-spacing: .04em;
-    }
-    .badge::before { content:''; width:6px; height:6px; border-radius:50%; }
-    .alta  { color:#22c55e; background:#14532d; } .alta::before  { background:#22c55e; }
-    .media { color:#f59e0b; background:#451a03; } .media::before { background:#f59e0b; }
-    .baixa { color:#f97316; background:#431407; } .baixa::before { background:#f97316; }
-    .ruim  { color:#ef4444; background:#450a0a; } .ruim::before  { background:#ef4444; }
-    .nd    { color:var(--muted); background:rgba(148,163,184,.1); } .nd::before { background:var(--muted); }
-    .spam-ok   { color: var(--text); }
-    .spam-alto { color:#ef4444; background:#450a0a; padding:3px 8px; border-radius:6px; font-weight:700; }
-    .dim       { color: var(--muted); font-size: 0.8rem; }
-    .center    { display:flex; align-items:center; justify-content:center; padding:80px; flex-direction:column; gap:16px; color:var(--muted); }
-    .spin      { width:32px; height:32px; border:3px solid var(--border); border-top-color:#60a5fa; border-radius:50%; animation:s .8s linear infinite; }
-    @keyframes s { to { transform:rotate(360deg); } }
-    .err { padding:40px; text-align:center; color:#ef4444; line-height:1.8; }
-    
-    /* === ESTILOS DO STATUS === */
-    .status-up { color: #22c55e; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
-    .status-down { color: #ef4444; display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
-    .status-date { color: var(--muted); font-size: 0.72rem; font-weight: 400; }
 
-    @media(max-width:640px){ main{padding:12px;} header{padding:16px;} toolbar{padding:12px;} td,th{padding:10px 12px;} }
+    /* ── TABLES & CARDS ── */
+    .table-card {
+      background: var(--bg-primary); border: 0.5px solid var(--border-light);
+      border-radius: var(--radius-xl); padding: 1.5rem; overflow-x: auto;
+    }
+    .table-title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 14px; font-weight: 600; margin-bottom: 4px;
+    }
+    .table-sub { font-size: 12px; color: var(--text-tertiary); margin-bottom: 1.25rem; }
+    
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th {
+      padding: 10px 12px; text-align: left; color: var(--text-tertiary);
+      font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+      border-bottom: 0.5px solid var(--border-light); white-space: nowrap;
+    }
+    td { padding: 12px 12px; border-bottom: 0.5px solid var(--border-light); color: var(--text-primary); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg-secondary); }
+    
+    .name-col { font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 13px; }
+    .dim { color: var(--text-tertiary); font-size: 11.5px; }
+
+    /* ── BADGES & STATUS ── */
+    .heat {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; min-width: 50px; text-align: center;
+      letter-spacing: 0.04em;
+    }
+    /* Cores ajustadas para suportar dark/light nativo do card */
+    .heat-alta  { background: rgba(16, 185, 129, 0.15); color: #059669; }
+    .heat-media { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+    .heat-baixa { background: rgba(249, 115, 22, 0.15); color: #c2410c; }
+    .heat-ruim  { background: rgba(239, 68, 68, 0.15); color: #b91c1c; }
+    .heat-nd    { background: var(--bg-secondary); color: var(--text-tertiary); }
+
+    @media (prefers-color-scheme: dark) {
+      .heat-alta  { color: #34d399; }
+      .heat-media { color: #fbbf24; }
+      .heat-baixa { color: #fb923c; }
+      .heat-ruim  { color: #f87171; }
+    }
+
+    .status-up { color: #059669; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+    .status-down { color: #dc2626; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+    
+    @media (prefers-color-scheme: dark) {
+      .status-up { color: #34d399; }
+      .status-down { color: #f87171; }
+    }
+
+    .spam-ok { color: var(--text-primary); }
+    .spam-alto { color: #dc2626; background: rgba(239, 68, 68, 0.1); padding: 3px 8px; border-radius: 6px; font-weight: 700; display: inline-block;}
+    @media (prefers-color-scheme: dark) { .spam-alto { color: #f87171; } }
+
+    /* ── LOADING & ERRORS ── */
+    .center-state { display: flex; align-items: center; justify-content: center; padding: 60px 20px; flex-direction: column; gap: 16px; color: var(--text-tertiary); font-size: 13px; }
+    .spin { width: 30px; height: 30px; border: 3px solid var(--border-med); border-top-color: var(--text-info); border-radius: 50%; animation: s .8s linear infinite; }
+    @keyframes s { to { transform: rotate(360deg); } }
+    .err { padding: 40px; text-align: center; color: #dc2626; line-height: 1.6; font-size: 13px; }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center; font-size: 12px; color: var(--text-tertiary);
+      margin-top: 2.5rem; padding-top: 1.5rem;
+      border-top: 0.5px solid var(--border-light);
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1rem 0.75rem 3rem; }
+      .hero { padding: 1.5rem 1.35rem; }
+      .hero h1 { font-size: 22px; }
+      .hist-controls { margin-left: 0; width: 100%; }
+      .toolbar { gap: 12px; }
+      th, td { padding: 10px; }
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Reputação de Domínios de e-mail</h1>
-  <p>Grupo JCPM · Google Postmaster</p>
-  <div class="meta">
-    <span id="ref-date">Carregando...</span>
-    <span>·</span>
-    <span id="dom-count"></span>
-    <span>·</span>
-    <span id="load-time"></span>
-  </div>
-</header>
+<div class="page">
 
-<div class="toolbar">
-  <button class="btn active" id="btn-atual" onclick="switchMode('atual')">Dados Atuais</button>
-  <button class="btn" id="btn-hist" onclick="switchMode('historico')">Histórico</button>
-  <div class="hist-controls" id="hist-controls">
-    <span class="tag-hist">Histórico</span>
-    <label>Data:
-      <input type="date" id="hist-date" max="">
-    </label>
-    <button class="btn active" onclick="loadHistory()">Buscar</button>
+  <header class="header">
+    <span class="header-logo">Reputação de IPs · Grupo JCPM</span>
+    <span class="header-tag">Google Postmaster</span>
+  </header>
+
+  <div class="hero">
+    <span class="hero-eyebrow"><i class="ti ti-mail-shield"></i> Monitoramento contínuo</span>
+    <h1>Reputação de <em>Domínios</em></h1>
+    <p>Acompanhamento da saúde e entregabilidade dos e-mails disparados pelos shoppings através dos dados extraídos do Google Postmaster.</p>
+    <div class="hero-meta">
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="meta-dom">--</span>
+        <span class="hero-stat-lbl">Domínios monitorados</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="meta-ref">--</span>
+        <span class="hero-stat-lbl">Data de referência Google</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="meta-time">--:--</span>
+        <span class="hero-stat-lbl">Última leitura da planilha</span>
+      </div>
+    </div>
   </div>
+
+  <nav class="toolbar">
+    <button class="pill active" id="btn-atual" onclick="switchMode('atual')"><i class="ti ti-bolt"></i> Dados Atuais</button>
+    <button class="pill" id="btn-hist" onclick="switchMode('historico')"><i class="ti ti-history"></i> Histórico</button>
+    <div class="hist-controls" id="hist-controls">
+      <input type="date" id="hist-date" class="date-picker" max="">
+      <button class="pill" onclick="loadHistory()"><i class="ti ti-search"></i> Buscar Data</button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="table-card">
+      <div class="table-title">Performance dos domínios</div>
+      <div class="table-sub">Resultados atuais extraídos da integração de dados.</div>
+      
+      <div id="container">
+        <div class="center-state"><div class="spin"></div><span>Carregando dados estruturados...</span></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">CRM e Inteligência de Dados · JCPM Shoppings</footer>
+
 </div>
-
-<main>
-  <div class="card" id="container">
-    <div class="center"><div class="spin"></div><span>Carregando dados...</span></div>
-  </div>
-</main>
 
 <script>
   const SHEET_ID   = '1PdsjYfnypYEnEDIklwuXItfvQfkjWuCZ6CDSA5CViYI';
   const HIST_SHEET = 'Historico'; 
 
-  // Mapeamento original das colunas (sem precisar criar colunas extras)
+  // Mapeamento original das colunas
   const C = { DATA:0, DOMINIO:1, SHOPPING:2, SPAM:3, REP:4, DKIM:5, SPF:6, DMARC:7, ULT:13 };
 
   let currentMode = 'atual';
-  let trendsMap = {}; // Objeto que vai armazenar a tendência calculada de cada shopping
+  let trendsMap = {}; // Armazena a tendência calculada de cada shopping
 
+  // Define o limite do input de data para hoje
   document.getElementById('hist-date').max = new Date().toISOString().split('T')[0];
 
   function switchMode(mode) {
@@ -184,7 +315,7 @@
     const res  = await fetch(url);
     const text = await res.text();
     const m    = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);\s*$/);
-    if (!m) throw new Error('Formato inesperado. Verifique permissões ou bloqueios do navegador.');
+    if (!m) throw new Error('Formato inesperado. Verifique permissões ou bloqueios do navegador (CORS).');
     const json = JSON.parse(m[1]);
     if (json.status !== 'ok') throw new Error(json.errors?.[0]?.message || 'Erro na planilha.');
     return json.table.rows.map(r => r.c.map(c => c?.v ?? c?.f ?? ''));
@@ -192,20 +323,19 @@
 
   function showLoading() {
     document.getElementById('container').innerHTML =
-      '<div class="center"><div class="spin"></div><span>Carregando dados...</span></div>';
+      '<div class="center-state"><div class="spin"></div><span>Carregando dados estruturados...</span></div>';
   }
 
   function showError(msg) {
     document.getElementById('container').innerHTML =
-      `<div class="err">❌ ${msg}<br><small>Confirme que a planilha está compartilhada e verifique bloqueios de rede.</small></div>`;
+      `<div class="err"><i class="ti ti-alert-triangle" style="font-size:24px;margin-bottom:8px;display:block"></i> ${msg}</div>`;
   }
 
-  // === NOVA FUNÇÃO: Calcula as tendências vasculhando a aba Histórico ===
+  // Inteligência que varre o histórico para calcular a tendência das setas
   function buildTrends(histRows) {
     trendsMap = {};
     const histMap = {};
     
-    // 1. Agrupa os registros por Shopping e formata a Data para ordenação
     histRows.forEach(r => {
       const dateRaw = r[C.DATA];
       const shopping = r[C.SHOPPING] || r[C.DOMINIO];
@@ -224,9 +354,7 @@
 
     const score = { 'ALTA': 4, 'MÉDIA': 3, 'MEDIA': 3, 'BAIXA': 2, 'RUIM': 1 };
     
-    // 2. Analisa cada shopping individualmente
     for (const shop in histMap) {
-      // Ordena do mais recente para o mais antigo
       const history = histMap[shop].sort((a, b) => b.date - a.date);
       if (history.length < 2) continue;
 
@@ -234,17 +362,15 @@
       let changeRecord = null;
       let previousRep = null;
 
-      // 3. Volta no tempo até achar um dia em que a reputação era diferente
       for (let i = 1; i < history.length; i++) {
         const pastRep = history[i].rep;
         if (pastRep !== currentRep && pastRep !== 'ND' && pastRep !== 'SEM DADOS' && pastRep !== '') {
-          changeRecord = history[i - 1]; // O dia da quebra (a primeira vez que a reputação ATUAL apareceu após a antiga)
+          changeRecord = history[i - 1]; 
           previousRep = pastRep;
           break;
         }
       }
 
-      // 4. Se houve mudança, checa se a nota subiu ou desceu
       if (changeRecord && previousRep) {
         const currScore = score[currentRep] || 0;
         const prevScore = score[previousRep] || 0;
@@ -262,16 +388,11 @@
   async function load() {
     showLoading();
     try {
-      // Baixa os Dados Atuais e o Histórico simultaneamente
       const [atualRows, histRows] = await Promise.all([
         fetchSheet('Ultimo_Resultado'),
         fetchSheet(HIST_SHEET)
       ]);
-      
-      // Processa a inteligência do status
       buildTrends(histRows);
-      
-      // Renderiza a tela
       render(atualRows);
     } catch(e) {
       console.error(e);
@@ -291,7 +412,7 @@
         return;
       }
       render(rows);
-      document.getElementById('load-time').textContent = `Histórico de ${fmtInputDate(dateVal)}`;
+      document.getElementById('meta-time').textContent = `Histórico de ${fmtInputDate(dateVal)}`;
     } catch(e) {
       console.error(e);
       showError(e.message);
@@ -299,16 +420,16 @@
   }
 
   function badge(rep) {
-    const m = { ALTA:['alta','ALTA'], MEDIA:['media','MÉDIA'], BAIXA:['baixa','BAIXA'], RUIM:['ruim','RUIM'] };
-    const [cls, lbl] = m[rep] || ['nd', rep || 'SEM DADOS'];
-    return `<span class="badge ${cls}">${lbl}</span>`;
+    const m = { ALTA:['heat-alta','ALTA'], MEDIA:['heat-media','MÉDIA'], BAIXA:['heat-baixa','BAIXA'], RUIM:['heat-ruim','RUIM'] };
+    const [cls, lbl] = m[rep] || ['heat-nd', rep || 'ND'];
+    return `<span class="heat ${cls}">${lbl}</span>`;
   }
 
   function spam(val) {
     if (val === '' || val == null) return '<span class="dim">—</span>';
     const n = parseFloat(val);
     const fmt = n.toFixed(4) + '%';
-    return n > 0.3 ? `<span class="spam-alto">⚠ ${fmt}</span>` : `<span class="spam-ok">${fmt}</span>`;
+    return n > 0.3 ? `<span class="spam-alto"><i class="ti ti-alert-circle" style="font-size:12px"></i> ${fmt}</span>` : `<span class="spam-ok">${fmt}</span>`;
   }
 
   function pct(val) {
@@ -316,29 +437,28 @@
     return isNaN(n) ? '<span class="dim">—</span>' : `<span class="dim">${n.toFixed(2)}%</span>`;
   }
 
-  // === RENDERIZAÇÃO DO STATUS DINÂMICO ===
   function renderStatus(trendObj) {
     if (!trendObj) return '<span class="dim">—</span>';
     
     const dataFormatada = fmtDate(trendObj.date);
-    const htmlData = dataFormatada !== '—' ? `<span class="status-date">${dataFormatada}</span>` : '';
+    const htmlData = dataFormatada !== '—' ? `<span class="dim" style="margin-left:4px; font-size:10.5px">${dataFormatada}</span>` : '';
 
     if (trendObj.direction === 'up') {
-      return `<div class="status-up">⬆️ ${htmlData}</div>`;
+      return `<div class="status-up"><i class="ti ti-trending-up"></i> ${htmlData}</div>`;
     } else if (trendObj.direction === 'down') {
-      return `<div class="status-down">⬇️ ${htmlData}</div>`;
+      return `<div class="status-down"><i class="ti ti-trending-down"></i> ${htmlData}</div>`;
     }
     
     return '<span class="dim">—</span>';
   }
 
   function render(rows) {
+    // Atualiza os painéis (Hero Meta)
     const dataRef = fmtDate(rows[0]?.[C.DATA]);
-    document.getElementById('ref-date').textContent  = dataRef !== '—' ? `Referência: ${dataRef}` : '—';
-    document.getElementById('dom-count').textContent = `${rows.length} domínios`;
-    
+    document.getElementById('meta-ref').textContent  = dataRef !== '—' ? dataRef : '—';
+    document.getElementById('meta-dom').textContent = rows.length;
     if (currentMode === 'atual') {
-      document.getElementById('load-time').textContent = `Atualizado às ${new Date().toLocaleTimeString('pt-BR')}`;
+      document.getElementById('meta-time').textContent = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
     }
 
     document.getElementById('container').innerHTML = `
@@ -348,22 +468,21 @@
             <th>Shopping</th>
             <th>Status</th>
             <th>Reputação</th>
-            <th>Taxa de Spam</th>
+            <th>Spam Rate</th>
             <th>DKIM</th>
             <th>SPF</th>
             <th>DMARC</th>
-            <th>Última atualização Google</th>
+            <th>Atualização Google</th>
           </tr>
         </thead>
         <tbody>
           ${rows.map(r => {
             const shopName = r[C.SHOPPING] || r[C.DOMINIO];
-            // Se estivermos visualizando o passado, o Status de alteração fica limpo para não confundir.
             const trend = (currentMode === 'atual') ? trendsMap[shopName] : null; 
             
             return `
             <tr>
-              <td class="name">${shopName}</td>
+              <td class="name-col">${shopName}</td>
               <td>${renderStatus(trend)}</td>
               <td>${badge(r[C.REP])}</td>
               <td>${spam(r[C.SPAM])}</td>
@@ -377,6 +496,7 @@
       </table>`;
   }
 
+  // Inicializa
   load();
   setInterval(() => { if (currentMode === 'atual') load(); }, 5 * 60 * 1000);
 </script>

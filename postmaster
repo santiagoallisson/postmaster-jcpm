@@ -1,511 +1,1401 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" style="scroll-behavior:smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Postmaster Dashboard · JCPM</title>
+  <title>Dashboard de Personas — RioMar Recife</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f7f6f3;
-      --bg-tertiary: #efede8;
-      --bg-info: #e6f1fb;
-      --text-primary: #1a1917;
-      --text-secondary: #5f5e5a;
+      --bg-tertiary:   #f7f6f3;
+      --bg-secondary:  #efede8;
+      --bg-primary:    #ffffff;
+      --bg-info:       #e6f1fb;
+      --text-primary:  #1a1917;
+      --text-secondary:#5f5e5a;
       --text-tertiary: #888780;
-      --text-info: #185fa5;
-      --border-light: rgba(26,25,23,0.1);
-      --border-med: rgba(26,25,23,0.2);
-      --border-info: #378add;
-      --accent: #1a1917;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --radius-xl: 16px;
+      --text-info:     #185fa5;
+      --accent:        #1a1917;
+      --accent-inv:    #ffffff;
+      --border-light:  rgba(26,25,23,0.1);
+      --border-med:    rgba(26,25,23,0.2);
+      --success:       #059669;
+      --warning:       #d97706;
+      --danger:        #b91c1c;
+      --radius:        16px;
+      --radius-sm:     10px;
+      --radius-pill:   20px;
+      --shadow:        0 1px 3px rgba(0,0,0,.05);
+      --shadow-md:     0 4px 12px rgba(0,0,0,.08);
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg-primary: #1e1d1b;
-        --bg-secondary: #272623;
-        --bg-tertiary: #302f2c;
-        --bg-info: #0c2d50;
-        --text-primary: #f0eeea;
-        --text-secondary: #b4b2a9;
+        --bg-tertiary:   #1e1d1b;
+        --bg-secondary:  #272623;
+        --bg-primary:    #302f2c;
+        --bg-info:       #0c2d50;
+        --text-primary:  #f0eeea;
+        --text-secondary:#b4b2a9;
         --text-tertiary: #888780;
-        --text-info: #85b7eb;
-        --border-light: rgba(240,238,234,0.1);
-        --border-med: rgba(240,238,234,0.2);
-        --border-info: #378add;
-        --accent: #f0eeea;
+        --text-info:     #85b7eb;
+        --accent:        #f0eeea;
+        --accent-inv:    #1a1917;
+        --border-light:  rgba(240,238,234,0.1);
+        --border-med:    rgba(240,238,234,0.2);
+        --success:       #34d399;
+        --warning:       #fbbf24;
+        --danger:        #f87171;
       }
     }
-
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Open Sans', -apple-system, sans-serif;
-      background: var(--bg-tertiary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding: 2rem 1rem 4rem;
-    }
-
-    .page { max-width: 1100px; margin: 0 auto; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Open Sans',-apple-system,sans-serif;background:var(--bg-tertiary);color:var(--text-primary);font-size:14px;line-height:1.6}
+    h1,h2,h3,h4,h5{font-family:'Montserrat',sans-serif;font-weight:600}
 
     /* ── HEADER ── */
-    .header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 2rem; padding-bottom: 1.25rem;
-      border-bottom: 0.5px solid var(--border-light);
-    }
-    .header-logo {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 15px; color: var(--text-secondary); font-style: italic;
-    }
-    .header-tag {
-      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-      text-transform: uppercase; color: var(--text-tertiary);
-      border: 0.5px solid var(--border-med); padding: 3px 10px; border-radius: 20px;
-    }
+    .header{background:var(--bg-primary);border-bottom:1px solid var(--border-light);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .header-brand{display:flex;align-items:center;gap:12px}
+    .header-logo{width:36px;height:36px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--accent-inv);font-weight:700;font-family:'Montserrat',sans-serif;font-size:14px;flex-shrink:0}
+    .header-title{font-size:15px;font-weight:600}
+    .header-subtitle{font-size:12px;color:var(--text-tertiary);font-weight:400}
+    .header-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:var(--bg-secondary);color:var(--text-secondary);border:1px solid var(--border-light)}
+
+    /* ── LAYOUT ── */
+    .container{max-width:1100px;margin:0 auto;padding:2rem 2rem 4rem}
 
     /* ── HERO ── */
-    .hero {
-      background: var(--bg-secondary); border-radius: var(--radius-xl);
-      padding: 2.25rem 2.5rem 2rem; margin-bottom: 2rem;
-      border: 0.5px solid var(--border-light); position: relative; overflow: hidden;
-    }
-    .hero::after {
-      content: ''; position: absolute; top: -60px; right: -60px;
-      width: 220px; height: 220px; border-radius: 50%;
-      background: var(--bg-tertiary); opacity: 0.7; pointer-events: none;
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
-      text-transform: uppercase; color: var(--text-secondary);
-      border: 0.5px solid var(--border-med); padding: 4px 12px;
-      border-radius: 20px; margin-bottom: 1rem;
-    }
-    .hero h1 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 28px; font-weight: 600; line-height: 1.2;
-      margin-bottom: 0.65rem; position: relative; z-index: 1;
-    }
-    .hero h1 em { font-style: italic; color: var(--text-secondary); }
-    .hero p {
-      font-size: 14px; color: var(--text-secondary); line-height: 1.65;
-      max-width: 560px; position: relative; z-index: 1;
-    }
-    .hero-meta {
-      display: flex; gap: 24px; margin-top: 1.25rem;
-      flex-wrap: wrap; position: relative; z-index: 1;
-    }
-    .hero-stat { display: flex; flex-direction: column; }
-    .hero-stat-val {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1;
-    }
-    .hero-stat-lbl { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+    .hero{background:var(--bg-secondary);border:1px solid var(--border-light);border-radius:var(--radius);padding:36px 36px 32px;margin-bottom:24px;position:relative;overflow:hidden}
+    .hero::after{content:'';position:absolute;right:-50px;top:-60px;width:220px;height:220px;border-radius:50%;background:var(--border-light);pointer-events:none}
+    .hero-content{position:relative;z-index:1}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:var(--bg-primary);border:1px solid var(--border-med);font-size:11px;font-weight:500;color:var(--text-secondary);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px}
+    .hero-heading{font-size:28px;font-weight:600;line-height:1.2;margin-bottom:6px;color:var(--text-primary)}
+    .hero-heading em{color:var(--text-secondary);font-style:normal}
+    .hero-desc{font-size:13px;color:var(--text-secondary);max-width:560px;margin-bottom:28px;line-height:1.6}
+    .hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+    .hero-stat{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:var(--radius-sm);padding:16px 18px}
+    .hero-stat-value{font-size:22px;font-weight:700;font-family:'Montserrat',sans-serif;line-height:1.2;color:var(--text-primary)}
+    .hero-stat-label{font-size:11px;color:var(--text-secondary);margin-top:4px;line-height:1.4}
+    .hero-stat-delta{font-size:11px;margin-top:6px;color:var(--text-tertiary)}
+    .delta-up{color:var(--success)}
+    .delta-down{color:var(--danger)}
+    .hero-stat-pct{display:inline-block;margin-top:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(16,185,129,0.12);color:#059669}
 
-    /* ── NAV PILLS & TOOLBAR ── */
-    .toolbar {
-      display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 1.75rem;
-    }
-    .pill {
-      font-family: 'Open Sans', sans-serif; font-size: 13px; font-weight: 500;
-      padding: 8px 18px; border-radius: 20px; cursor: pointer;
-      border: 0.5px solid var(--border-med); background: var(--bg-primary);
-      color: var(--text-secondary); transition: all 0.18s ease;
-      display: inline-flex; align-items: center; gap: 6px;
-    }
-    .pill:hover { background: var(--bg-secondary); color: var(--text-primary); }
-    .pill.active { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
-    .pill i { font-size: 15px; }
+    /* ── INSIGHTS STRIP ── */
+    .insights-strip{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+    .insight-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary)}
+    .insight-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 
-    .hist-controls {
-      display: none; align-items: center; gap: 8px; margin-left: auto;
-    }
-    .hist-controls.visible { display: flex; }
-    .date-picker {
-      background: var(--bg-primary); border: 0.5px solid var(--border-med);
-      color: var(--text-primary); border-radius: 20px;
-      padding: 7px 14px; font-family: 'Open Sans'; font-size: 12.5px; outline: none;
-      color-scheme: light dark;
-    }
+    /* ── KPI ROW ── */
+    .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:24px}
+    .kpi-card{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:var(--radius);padding:18px 20px}
+    .kpi-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:8px}
+    .kpi-value{font-size:22px;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--text-primary);line-height:1.1}
+    .kpi-sub{font-size:12px;color:var(--text-tertiary);margin-top:5px}
+    .kpi-trend{display:flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;margin-top:7px}
+    .trend-up{color:var(--success)}
+    .trend-down{color:var(--danger)}
 
-    /* ── TABLES & CARDS ── */
-    .table-card {
-      background: var(--bg-primary); border: 0.5px solid var(--border-light);
-      border-radius: var(--radius-xl); padding: 1.5rem; overflow-x: auto;
-    }
-    .table-title {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 14px; font-weight: 600; margin-bottom: 4px;
-    }
-    .table-sub { font-size: 12px; color: var(--text-tertiary); margin-bottom: 1.25rem; }
-    
-    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-    th {
-      padding: 10px 12px; text-align: left; color: var(--text-tertiary);
-      font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
-      border-bottom: 0.5px solid var(--border-light); white-space: nowrap;
-    }
-    td { padding: 12px 12px; border-bottom: 0.5px solid var(--border-light); color: var(--text-primary); }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--bg-secondary); }
-    
-    .name-col { font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 13px; }
-    .dim { color: var(--text-tertiary); font-size: 11.5px; }
+    /* ── TABS ── */
+    .tabs-wrapper{margin-bottom:24px}
+    .tabs-nav{display:flex;gap:6px;flex-wrap:wrap}
+    .tab-btn{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--radius-pill);border:1px solid var(--border-med);background:var(--bg-primary);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.18s ease;font-family:'Open Sans',sans-serif;white-space:nowrap}
+    .tab-btn:hover{background:var(--bg-secondary);color:var(--text-primary)}
+    .tab-btn.active{background:var(--accent);color:var(--accent-inv);border-color:var(--accent)}
+    .tab-panel{display:none}
+    .tab-panel.visible{display:block}
 
-    /* ── BADGES & STATUS ── */
-    .heat {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: 11px; font-weight: 600; min-width: 50px; text-align: center;
-      letter-spacing: 0.04em;
-    }
-    .heat-alta  { background: rgba(16, 185, 129, 0.15); color: #059669; }
-    .heat-media { background: rgba(245, 158, 11, 0.15); color: #d97706; }
-    .heat-baixa { background: rgba(249, 115, 22, 0.15); color: #c2410c; }
-    .heat-ruim  { background: rgba(239, 68, 68, 0.15); color: #b91c1c; }
-    .heat-nd    { background: var(--bg-secondary); color: var(--text-tertiary); }
+    /* ── SECTION ── */
 
-    @media (prefers-color-scheme: dark) {
-      .heat-alta  { color: #34d399; }
-      .heat-media { color: #fbbf24; }
-      .heat-baixa { color: #fb923c; }
-      .heat-ruim  { color: #f87171; }
-    }
+    /* ── PERSONA GRID ── */
+    .ins-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px;margin-bottom:28px}
 
-    .status-up { color: #059669; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-    .status-down { color: #dc2626; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-    
-    @media (prefers-color-scheme: dark) {
-      .status-up { color: #34d399; }
-      .status-down { color: #f87171; }
-    }
+    /* ── PERSONA CARD ── */
+    .pcard{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;transition:box-shadow 0.18s ease,transform 0.18s ease}
+    .pcard:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .pcard-bar{height:3px;background:var(--pc,var(--accent))}
+    .pcard-body{padding:18px 20px}
+    .pcard-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .pcard-icon{width:42px;height:42px;border-radius:10px;background:color-mix(in srgb,var(--pc,var(--accent)) 12%,transparent);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--pc,var(--accent));flex-shrink:0}
+    .pcard-name{font-size:14px;font-weight:600;font-family:'Montserrat',sans-serif;margin-bottom:2px}
+    .pcard-count{font-size:22px;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--pc,var(--accent))}
+    .pcard-period{font-size:11px;color:var(--text-tertiary)}
+    .pcard-desc{font-size:12.5px;color:var(--text-secondary);margin-bottom:14px;line-height:1.55}
+    .pcard-size-bar{margin-bottom:14px}
+    .pcard-size-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-tertiary);margin-bottom:4px}
+    .pcard-size-track{height:5px;background:var(--bg-secondary);border-radius:3px;overflow:hidden}
+    .pcard-size-fill{height:100%;background:var(--pc,var(--accent));border-radius:3px;transition:width .5s ease}
+    .pcard-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+    .pcard-tag{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;background:var(--bg-secondary);color:var(--text-secondary);border:1px solid var(--border-light)}
+    .pcard-action{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-tertiary);padding-top:12px;border-top:1px solid var(--border-light)}
+    .pcard-action i{color:var(--pc,var(--accent))}
+    /* email engagement strip on pcard */
+    .pcard-email{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+    .pcard-email-item{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+    .email-recv{background:var(--bg-info);color:var(--text-info)}
+    .email-eng-alta{background:rgba(16,185,129,0.15);color:#059669}
+    .email-eng-media{background:rgba(245,158,11,0.15);color:#d97706}
+    .email-eng-baixa{background:rgba(249,115,22,0.15);color:#c2410c}
 
-    .spam-ok { color: var(--text-primary); }
-    .spam-alto { color: #dc2626; background: rgba(239, 68, 68, 0.1); padding: 3px 8px; border-radius: 6px; font-weight: 700; display: inline-block;}
-    @media (prefers-color-scheme: dark) { .spam-alto { color: #f87171; } }
+    /* ── CHARTS ── */
+    .charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px;margin-bottom:28px}
+    .chart-card{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px}
+    .chart-card-title{font-size:14px;font-weight:600;margin-bottom:3px;color:var(--text-primary)}
+    .chart-card-sub{font-size:12px;color:var(--text-tertiary);margin-bottom:16px}
+    .chart-wrap{position:relative;height:240px}
+    .chart-wrap-sm{position:relative;height:190px}
 
-    /* ── LOADING & ERRORS ── */
-    .center-state { display: flex; align-items: center; justify-content: center; padding: 60px 20px; flex-direction: column; gap: 16px; color: var(--text-tertiary); font-size: 13px; }
-    .spin { width: 30px; height: 30px; border: 3px solid var(--border-med); border-top-color: var(--text-info); border-radius: 50%; animation: s .8s linear infinite; }
-    @keyframes s { to { transform: rotate(360deg); } }
-    .err { padding: 40px; text-align: center; color: #dc2626; line-height: 1.6; font-size: 13px; }
+    /* ── ALERT ── */
+    .alert{display:flex;gap:10px;padding:12px 16px;border-radius:var(--radius-sm);font-size:12.5px;margin-bottom:20px}
+    .alert-warning{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);color:var(--warning)}
+    @media (prefers-color-scheme:dark){.alert-warning{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.25);color:#fbbf24}}
 
     /* ── FOOTER ── */
-    .footer {
-      text-align: center; font-size: 12px; color: var(--text-tertiary);
-      margin-top: 2.5rem; padding-top: 1.5rem;
-      border-top: 0.5px solid var(--border-light);
-    }
+    .dashboard-footer{text-align:center;padding:28px 32px;font-size:11px;color:var(--text-tertiary);border-top:1px solid var(--border-light);margin-top:40px}
 
-    @media (max-width: 640px) {
-      body { padding: 1rem 0.75rem 3rem; }
-      .hero { padding: 1.5rem 1.35rem; }
-      .hero h1 { font-size: 22px; }
-      .hist-controls { margin-left: 0; width: 100%; }
-      .toolbar { gap: 12px; }
-      th, td { padding: 10px; }
+    /* ── DESTAQUE SECTION ── */
+    .destaque-section{margin-bottom:28px}
+    .destaque-section .section-title{display:flex;align-items:center;gap:8px}
+    .destaque-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+    .dc-card{background:var(--bg-primary);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden;transition:box-shadow 0.18s ease,transform 0.18s ease;position:relative}
+    .dc-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .dc-bar{height:3px;background:var(--dc,var(--accent))}
+    .dc-body{padding:16px 18px}
+    .dc-badge{position:absolute;top:14px;right:14px;background:var(--dc,var(--accent));color:#fff;font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.06em;font-family:'Montserrat',sans-serif}
+    .dc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+    .dc-icon{width:40px;height:40px;border-radius:10px;background:color-mix(in srgb,var(--dc,var(--accent)) 12%,transparent);display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--dc,var(--accent));flex-shrink:0}
+    .dc-name{font-size:13px;font-weight:600;font-family:'Montserrat',sans-serif;margin-bottom:2px}
+    .dc-count{font-size:22px;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--dc,var(--accent))}
+    .dc-period{font-size:11px;color:var(--text-tertiary)}
+    .dc-gender{margin-bottom:13px}
+    .dc-section-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);margin-bottom:5px}
+    .dc-gender-track{display:flex;height:20px;border-radius:5px;overflow:hidden;gap:2px}
+    .dc-gender-f{background:#be185d;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;padding:0 6px;border-radius:4px 0 0 4px;white-space:nowrap}
+    .dc-gender-m{background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;padding:0 6px;border-radius:0 4px 4px 0;flex-grow:1;white-space:nowrap}
+    .dc-ages{margin-bottom:14px}
+    .dc-age-item{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+    .dc-age-name{font-size:10px;color:var(--text-tertiary);width:38px;flex-shrink:0}
+    .dc-age-track{flex:1;height:4px;background:var(--bg-secondary);border-radius:3px;overflow:hidden}
+    .dc-age-fill{height:100%;background:var(--dc,var(--accent));border-radius:3px;opacity:.85}
+    .dc-age-pct{font-size:10px;color:var(--text-secondary);font-weight:600;width:26px;text-align:right;flex-shrink:0}
+    .dc-attrs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+    .dc-attr{background:var(--bg-secondary);border-radius:8px;padding:7px 10px;border:1px solid var(--border-light)}
+    .dc-attr.full{grid-column:1/-1}
+    .dc-attr-label{font-size:10px;color:var(--text-tertiary);margin-bottom:2px;line-height:1.3}
+    .dc-attr-value{font-size:15px;font-weight:700;font-family:'Montserrat',sans-serif;color:var(--dc,var(--accent))}
+    .dc-attr-note{font-size:9px;color:var(--text-tertiary);margin-top:1px;font-style:italic}
+    .dc-attr-note.real{color:var(--success);font-style:normal;font-weight:600}
+    .dc-warning{display:flex;align-items:flex-start;gap:6px;font-size:11px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);color:var(--warning);border-radius:8px;padding:6px 10px;margin-bottom:12px;line-height:1.4}
+    @media (prefers-color-scheme:dark){.dc-warning{color:#fbbf24}}
+    .dc-disclaimer{font-size:10px;color:var(--text-tertiary);border-top:1px solid var(--border-light);padding-top:9px;font-style:italic;line-height:1.4}
+    /* email engagement on dc-card */
+    .dc-email{margin-bottom:12px}
+    .dc-email-pills{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+    .dc-email-pill{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+    .dep-recv{background:var(--bg-info);color:var(--text-info)}
+    .dep-alta{background:rgba(16,185,129,0.15);color:#059669}
+    .dep-media{background:rgba(245,158,11,0.15);color:#d97706}
+    .dep-baixa{background:rgba(249,115,22,0.15);color:#c2410c}
+
+    /* ── SECTION HEADER ── */
+    .section-header{margin-bottom:18px}
+    .section-title{font-size:16px;font-weight:600;margin-bottom:3px;font-family:'Montserrat',sans-serif}
+    .section-desc{font-size:12.5px;color:var(--text-tertiary);line-height:1.5}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:640px){
+      .container{padding:1rem 1rem 3rem}
+      .hero{padding:20px}
+      .hero-heading{font-size:22px}
+      .hero-stats{grid-template-columns:1fr 1fr}
+      .kpi-row{grid-template-columns:1fr 1fr}
+      .ins-grid{grid-template-columns:1fr}
+      .charts-grid{grid-template-columns:1fr}
+      .header{padding:12px 16px}
+      .header-meta{display:none}
+      .tabs-nav{flex-wrap:wrap}
+      .destaque-grid{grid-template-columns:1fr}
     }
   </style>
 </head>
 <body>
 
-<div class="page">
+<!-- ════════════ HEADER ════════════ -->
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">RM</div>
+    <div>
+      <div class="header-title">Dashboard de Personas</div>
+      <div class="header-subtitle">RioMar Recife — CRM / Insider</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="badge"><i class="ti ti-calendar"></i> Mar–Mai 2026</span>
+    <span class="badge"><i class="ti ti-database"></i> 59 segmentos</span>
+    <span class="badge" style="background:var(--bg-tertiary);color:var(--text-secondary)">Atualizado: Jun/2026</span>
+  </div>
+</header>
 
-  <header class="header">
-    <span class="header-logo">Reputação de IPs · Grupo JCPM</span>
-    <span class="header-tag">Google Postmaster</span>
-  </header>
+<!-- ════════════ MAIN ════════════ -->
+<div class="container">
 
-  <div class="hero">
-    <span class="hero-eyebrow"><i class="ti ti-mail-shield"></i> Monitoramento contínuo</span>
-    <h1>Reputações de <em>IPs</em></h1>
-    <p>Acompanhamento da saúde e entregabilidade dos e-mails disparados pelos shoppings através dos dados extraídos do Google Postmaster.</p>
-    <div class="hero-meta">
-      <div class="hero-stat">
-        <span class="hero-stat-val" id="meta-dom">--</span>
-        <span class="hero-stat-lbl">Domínios monitorados</span>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow"><i class="ti ti-map-pin"></i> RioMar Recife · CRM Insider</div>
+      <h1 class="hero-heading">Quem é o nosso <em>cliente digital?</em></h1>
+      <p class="hero-desc">Mapeamento das principais personas identificadas no CRM — 59 segmentos exportados da Insider. Período: março a maio de 2026.</p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">385.565</div>
+          <div class="hero-stat-label">Clientes com perfil de idade (opt-in)</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">212.990</div>
+          <div class="hero-stat-label">Opt-in de gênero identificado</div>
+          <div class="hero-stat-delta">114.420 mulheres · 98.570 homens</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">40.669</div>
+          <div class="hero-stat-label">Têm app ativo (Mai/26)</div>
+          <div class="hero-stat-pct">10,6% do opt-in</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">~20.000</div>
+          <div class="hero-stat-label">Impactados via e-mail ou push (Mai)</div>
+          <div class="hero-stat-pct">5,2% do opt-in</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">65.905</div>
+          <div class="hero-stat-label">Participaram de eventos (base histórica)</div>
+          <div class="hero-stat-pct">17,1% do opt-in</div>
+        </div>
       </div>
-      <div class="hero-stat">
-        <span class="hero-stat-val" id="meta-ref">--</span>
-        <span class="hero-stat-lbl">Data de referência Google</span>
+    </div>
+  </section>
+
+  <!-- ════════════ DESTAQUE ════════════ -->
+  <section class="destaque-section">
+    <div class="section-header">
+      <div class="section-title"><i class="ti ti-star-filled" style="color:var(--warning)"></i> Personas em Destaque</div>
+      <div class="section-desc">Públicos estratégicos com análise cruzada de perfil. Gênero e faixa etária são <em>estimativas proporcionais</em> à base total — atributos marcados como <strong>real</strong> derivam de cruzamentos diretos entre segmentos.</div>
+    </div>
+    <div class="destaque-grid">
+
+      <!-- ── 1. Tutores de Pet ── -->
+      <div class="dc-card" style="--dc:#15803d">
+        <div class="dc-bar"></div>
+        <div class="dc-body">
+          <span class="dc-badge">Destaque</span>
+          <div class="dc-top">
+            <div class="dc-icon"><i class="ti ti-paw"></i></div>
+            <div>
+              <div class="dc-name">Tutores de Pet</div>
+              <div class="dc-count">94</div>
+              <div class="dc-period">PetMar maio/26 · 41 grandes · 53 pequenos</div>
+            </div>
+          </div>
+          <div class="dc-gender">
+            <div class="dc-section-label">Gênero (est.)</div>
+            <div class="dc-gender-track">
+              <div class="dc-gender-f" style="width:62%">♀ 62%</div>
+              <div class="dc-gender-m">♂ 38%</div>
+            </div>
+          </div>
+          <div class="dc-ages">
+            <div class="dc-section-label">Faixa etária (est.)</div>
+            <div class="dc-age-item"><div class="dc-age-name">18–29</div><div class="dc-age-track"><div class="dc-age-fill" style="width:18%"></div></div><div class="dc-age-pct">18%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">30–40</div><div class="dc-age-track"><div class="dc-age-fill" style="width:40%"></div></div><div class="dc-age-pct">40%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">41–50</div><div class="dc-age-track"><div class="dc-age-fill" style="width:28%"></div></div><div class="dc-age-pct">28%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">51–60</div><div class="dc-age-track"><div class="dc-age-fill" style="width:11%"></div></div><div class="dc-age-pct">11%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">60+</div><div class="dc-age-track"><div class="dc-age-fill" style="width:3%"></div></div><div class="dc-age-pct">3%</div></div>
+          </div>
+          <div class="dc-attrs">
+            <div class="dc-attr"><div class="dc-attr-label">Tem app</div><div class="dc-attr-value">~54%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">CRM ativo (e-mail)</div><div class="dc-attr-value">~65%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Usa estacionamento</div><div class="dc-attr-value">~68%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Conecta WiFi</div><div class="dc-attr-value">~60%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr full"><div class="dc-attr-label">Cobertura UUID Salesforce — pet grande (mai)</div><div class="dc-attr-value" style="font-size:13px">73% · 30 de 41</div><div class="dc-attr-note real">real — segmento exportado</div></div>
+          </div>
+          <div class="dc-disclaimer">Nicho de alta lealdade, com base na recorrência de visitas ao PetMar.</div>
+        </div>
       </div>
-      <div class="hero-stat">
-        <span class="hero-stat-val" id="meta-time">--:--</span>
-        <span class="hero-stat-lbl">Última leitura da planilha</span>
+
+      <!-- ── 2. Participantes de Evento ── -->
+      <div class="dc-card" style="--dc:#ea580c">
+        <div class="dc-bar"></div>
+        <div class="dc-body">
+          <span class="dc-badge">Destaque</span>
+          <div class="dc-top">
+            <div class="dc-icon"><i class="ti ti-calendar-event"></i></div>
+            <div>
+              <div class="dc-name">Participantes de Evento</div>
+              <div class="dc-count">33</div>
+              <div class="dc-period">mai/26 · 4 abr · 19 mar</div>
+            </div>
+          </div>
+          <div class="dc-warning"><i class="ti ti-alert-triangle" style="flex-shrink:0;margin-top:1px"></i> Base muito pequena — No período de estudo foram poucos eventos com identificação de clientes.</div>
+          <div class="dc-gender">
+            <div class="dc-section-label">Gênero (est.)</div>
+            <div class="dc-gender-track">
+              <div class="dc-gender-f" style="width:54%">♀ 54%</div>
+              <div class="dc-gender-m">♂ 46%</div>
+            </div>
+          </div>
+          <div class="dc-ages">
+            <div class="dc-section-label">Faixa etária (est.)</div>
+            <div class="dc-age-item"><div class="dc-age-name">18–29</div><div class="dc-age-track"><div class="dc-age-fill" style="width:38%"></div></div><div class="dc-age-pct">38%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">30–40</div><div class="dc-age-track"><div class="dc-age-fill" style="width:30%"></div></div><div class="dc-age-pct">30%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">41–50</div><div class="dc-age-track"><div class="dc-age-fill" style="width:18%"></div></div><div class="dc-age-pct">18%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">51–60</div><div class="dc-age-track"><div class="dc-age-fill" style="width:10%"></div></div><div class="dc-age-pct">10%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">60+</div><div class="dc-age-track"><div class="dc-age-fill" style="width:4%"></div></div><div class="dc-age-pct">4%</div></div>
+          </div>
+          <div class="dc-attrs">
+            <div class="dc-attr"><div class="dc-attr-label">Tem app</div><div class="dc-attr-value">~62%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">CRM ativo (e-mail)</div><div class="dc-attr-value">~58%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Usa estacionamento</div><div class="dc-attr-value">~42%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Conecta WiFi</div><div class="dc-attr-value">~75%</div><div class="dc-attr-note">est. — alta presença física</div></div>
+          </div>
+          <div class="dc-disclaimer">⚠️ Todos os valores são estimativas. Segmento requer validação de integração no Insider antes de qualquer uso estratégico.</div>
+        </div>
       </div>
+
+      <!-- ── 3. Tutores de Crianças ── -->
+      <div class="dc-card" style="--dc:#ec4899">
+        <div class="dc-bar"></div>
+        <div class="dc-body">
+          <span class="dc-badge">Destaque</span>
+          <div class="dc-top">
+            <div class="dc-icon"><i class="ti ti-baby-carriage"></i></div>
+            <div>
+              <div class="dc-name">Tutores de Crianças</div>
+              <div class="dc-count">1.299</div>
+              <div class="dc-period">média mensal · carrinho de bebê</div>
+            </div>
+          </div>
+          <div class="dc-gender">
+            <div class="dc-section-label">Gênero (est.)</div>
+            <div class="dc-gender-track">
+              <div class="dc-gender-f" style="width:72%">♀ 72%</div>
+              <div class="dc-gender-m">♂ 28%</div>
+            </div>
+          </div>
+          <div class="dc-ages">
+            <div class="dc-section-label">Faixa etária (est.)</div>
+            <div class="dc-age-item"><div class="dc-age-name">18–29</div><div class="dc-age-track"><div class="dc-age-fill" style="width:34%"></div></div><div class="dc-age-pct">34%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">30–40</div><div class="dc-age-track"><div class="dc-age-fill" style="width:52%"></div></div><div class="dc-age-pct">52%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">41–50</div><div class="dc-age-track"><div class="dc-age-fill" style="width:12%"></div></div><div class="dc-age-pct">12%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">51–60</div><div class="dc-age-track"><div class="dc-age-fill" style="width:2%"></div></div><div class="dc-age-pct">2%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">60+</div><div class="dc-age-track"><div class="dc-age-fill" style="width:0%"></div></div><div class="dc-age-pct">—</div></div>
+          </div>
+          <div class="dc-attrs">
+            <div class="dc-attr"><div class="dc-attr-label">Tem app</div><div class="dc-attr-value">~46%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">CRM ativo (e-mail)</div><div class="dc-attr-value">~51%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Usa estacionamento</div><div class="dc-attr-value">~80%</div><div class="dc-attr-note">est. — famílias c/ bebê dirigem</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Conecta WiFi</div><div class="dc-attr-value">~58%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr full"><div class="dc-attr-label">Frequência cinema (jornada)</div><div class="dc-attr-value" style="font-size:13px">~38%</div><div class="dc-attr-note">est. — entretenimento familiar</div></div>
+          </div>
+          <div class="dc-disclaimer">Perfil 30–40 anos concentra 52% — pico de vida parental. Alta propensão a consumo infantil, alimentação e cinema em família.</div>
+        </div>
+      </div>
+
+      <!-- ── 4. Usuários Estacionamento ── -->
+      <div class="dc-card" style="--dc:#0f766e">
+        <div class="dc-bar"></div>
+        <div class="dc-body">
+          <span class="dc-badge">Destaque</span>
+          <div class="dc-top">
+            <div class="dc-icon"><i class="ti ti-car"></i></div>
+            <div>
+              <div class="dc-name">Usuários Estacionamento</div>
+              <div class="dc-count">37.501</div>
+              <div class="dc-period">fidelizados · base acumulada</div>
+            </div>
+          </div>
+          <div class="dc-gender">
+            <div class="dc-section-label">Gênero (est.)</div>
+            <div class="dc-gender-track">
+              <div class="dc-gender-f" style="width:48%">♀ 48%</div>
+              <div class="dc-gender-m">♂ 52%</div>
+            </div>
+          </div>
+          <div class="dc-ages">
+            <div class="dc-section-label">Faixa etária (est.)</div>
+            <div class="dc-age-item"><div class="dc-age-name">18–29</div><div class="dc-age-track"><div class="dc-age-fill" style="width:13%"></div></div><div class="dc-age-pct">13%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">30–40</div><div class="dc-age-track"><div class="dc-age-fill" style="width:27%"></div></div><div class="dc-age-pct">27%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">41–50</div><div class="dc-age-track"><div class="dc-age-fill" style="width:29%"></div></div><div class="dc-age-pct">29%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">51–60</div><div class="dc-age-track"><div class="dc-age-fill" style="width:20%"></div></div><div class="dc-age-pct">20%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">60+</div><div class="dc-age-track"><div class="dc-age-fill" style="width:11%"></div></div><div class="dc-age-pct">11%</div></div>
+          </div>
+          <div class="dc-attrs">
+            <div class="dc-attr"><div class="dc-attr-label">Tem app</div><div class="dc-attr-value">~34%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">CRM ativo (e-mail)</div><div class="dc-attr-value">~38%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Pagou via app (mai)</div><div class="dc-attr-value">6,5%</div><div class="dc-attr-note real">real · 2.440 / 37.501</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Acessou aba estac. (mai)</div><div class="dc-attr-value">38,1%</div><div class="dc-attr-note real">real · 14.280 / 37.501</div></div>
+            <div class="dc-attr full"><div class="dc-attr-label">Conecta WiFi</div><div class="dc-attr-value" style="font-size:13px">~50%</div><div class="dc-attr-note">est. — alta permanência no shopping</div></div>
+          </div>
+          <div class="dc-disclaimer">Maior segmento do projeto (37.501). Perfil 41–50 anos predomina. Apenas 6,5% pagam via app — enorme oportunidade de digitalização.</div>
+        </div>
+      </div>
+
+      <!-- ── 5. Cinéfilo (identificado) ── -->
+      <div class="dc-card" style="--dc:#9333ea">
+        <div class="dc-bar"></div>
+        <div class="dc-body">
+          <span class="dc-badge" style="background:#7c3aed">Identificado</span>
+          <div class="dc-top">
+            <div class="dc-icon"><i class="ti ti-movie"></i></div>
+            <div>
+              <div class="dc-name">Cinéfilo</div>
+              <div class="dc-count">29.409</div>
+              <div class="dc-period">jornada de cinema · maio/26</div>
+            </div>
+          </div>
+          <div class="dc-gender">
+            <div class="dc-section-label">Gênero (est.)</div>
+            <div class="dc-gender-track">
+              <div class="dc-gender-f" style="width:53%">♀ 53%</div>
+              <div class="dc-gender-m">♂ 47%</div>
+            </div>
+          </div>
+          <div class="dc-ages">
+            <div class="dc-section-label">Faixa etária (est.)</div>
+            <div class="dc-age-item"><div class="dc-age-name">18–29</div><div class="dc-age-track"><div class="dc-age-fill" style="width:30%"></div></div><div class="dc-age-pct">30%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">30–40</div><div class="dc-age-track"><div class="dc-age-fill" style="width:28%"></div></div><div class="dc-age-pct">28%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">41–50</div><div class="dc-age-track"><div class="dc-age-fill" style="width:22%"></div></div><div class="dc-age-pct">22%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">51–60</div><div class="dc-age-track"><div class="dc-age-fill" style="width:14%"></div></div><div class="dc-age-pct">14%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">60+</div><div class="dc-age-track"><div class="dc-age-fill" style="width:6%"></div></div><div class="dc-age-pct">6%</div></div>
+          </div>
+          <div class="dc-attrs">
+            <div class="dc-attr"><div class="dc-attr-label">Tem app</div><div class="dc-attr-value">~42%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">CRM ativo (e-mail)</div><div class="dc-attr-value">~46%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Usa estacionamento</div><div class="dc-attr-value">~58%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Comprou ingresso app (mai)</div><div class="dc-attr-value">4,3%</div><div class="dc-attr-note real">real · 1.269 / 29.409</div></div>
+            <div class="dc-attr full"><div class="dc-attr-label">Conecta WiFi</div><div class="dc-attr-value" style="font-size:13px">~68%</div><div class="dc-attr-note">est. — alta permanência física</div></div>
+          </div>
+          <div class="dc-disclaimer">Maior segmento de entretenimento (+21% em 3 meses). Conversão digital ainda baixa: só 4,3% compram ingresso pelo app — alto potencial de digitalização.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INSIGHTS STRIP -->
+  <div class="insights-strip">
+    <div class="insight-item">
+      <div class="insight-icon" style="background:#ebf0ff;color:#1a56db"><i class="ti ti-trending-up"></i></div>
+      <span>Instalações do app <strong>triplicaram</strong> em 2 meses (9.155 → 23.742)</span>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon" style="background:#f0fdf4;color:#15803d"><i class="ti ti-movie"></i></div>
+      <span>Cinema: +21% na jornada e <strong>+642%</strong> em ingressos vendidos</span>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon" style="background:#fef3c7;color:#b45309"><i class="ti ti-wifi"></i></div>
+      <span>WiFi cresceu <strong>+30%</strong> (12.699 → 16.479) — sinal de maior fluxo físico</span>
+    </div>
+    <div class="insight-item">
+      <div class="insight-icon" style="background:#fff1f2;color:#dc2626"><i class="ti ti-alert-triangle"></i></div>
+      <span>Churn de app estável: ~7% de desinstalação/mês — monitorar tendência</span>
     </div>
   </div>
 
-  <nav class="toolbar">
-    <button class="pill active" id="btn-atual" onclick="switchMode('atual')"><i class="ti ti-bolt"></i> Dados Atuais</button>
-    <button class="pill" id="btn-hist" onclick="switchMode('historico')"><i class="ti ti-history"></i> Histórico</button>
-    <div class="hist-controls" id="hist-controls">
-      <input type="date" id="hist-date" class="date-picker" max="">
-      <button class="pill" onclick="loadHistory()"><i class="ti ti-search"></i> Buscar Data</button>
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">E-mail Engajado (Mai)</div>
+      <div class="kpi-value">17.799</div>
+      <div class="kpi-sub">Abriu ao menos 1 e-mail em maio</div>
+      <div class="kpi-trend trend-down"><i class="ti ti-trending-down"></i> &minus;15,4% vs. março</div>
     </div>
-  </nav>
+    <div class="kpi-card">
+      <div class="kpi-label">Super Ativo no App (Mai)</div>
+      <div class="kpi-value">11.649</div>
+      <div class="kpi-sub">5+ aberturas do app / mês</div>
+      <div class="kpi-trend trend-up"><i class="ti ti-trending-up"></i> +84,9% vs. março</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">WiFi Identificado (Mai)</div>
+      <div class="kpi-value">16.479</div>
+      <div class="kpi-sub">Visitantes físicos rastreados</div>
+      <div class="kpi-trend trend-up"><i class="ti ti-trending-up"></i> +29,8% vs. março</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cinéfilos — Jornada (Mai)</div>
+      <div class="kpi-value">29.409</div>
+      <div class="kpi-sub">Maior segmento de entretenimento</div>
+      <div class="kpi-trend trend-up"><i class="ti ti-trending-up"></i> +21,2% vs. março</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Pagou Estac. pelo App (Mai)</div>
+      <div class="kpi-value">2.440</div>
+      <div class="kpi-sub">Integração digital-físico</div>
+      <div class="kpi-trend trend-up"><i class="ti ti-trending-up"></i> +32,6% vs. março</div>
+    </div>
+  </div>
 
-  <main>
-    <div class="table-card">
-      <div class="table-title">Performance dos domínios</div>
-      <div class="table-sub">Resultados atuais extraídos da integração de dados.</div>
-      
-      <div id="container">
-        <div class="center-state"><div class="spin"></div><span>Carregando dados estruturados...</span></div>
+  <!-- ═══ TAB NAVIGATION ═══ -->
+  <div class="tabs-wrapper">
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="showTab(this,'visao-geral')"><i class="ti ti-layout-grid"></i> Visão Geral</button>
+      <button class="tab-btn" onclick="showTab(this,'digital')"><i class="ti ti-device-mobile"></i> Engajamento Digital</button>
+      <button class="tab-btn" onclick="showTab(this,'presenca')"><i class="ti ti-map-pin"></i> Presença Física</button>
+      <button class="tab-btn" onclick="showTab(this,'demografico')"><i class="ti ti-users"></i> Perfil Demográfico</button>
+    </div>
+  </div>
+
+  <!-- ════ TAB: VISÃO GERAL ════ -->
+  <div id="tab-visao-geral" class="tab-panel visible">
+    <div class="section-header">
+      <div class="section-title">Todas as Personas</div>
+      <div class="section-desc">Visão consolidada dos principais grupos identificados no CRM do RioMar Recife — 59 segmentos / Insider</div>
+    </div>
+
+    <div class="ins-grid">
+
+      <div class="pcard" style="--pc:#1a56db">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-mail"></i></div>
+            <div>
+              <div class="pcard-name">Engajador Digital</div>
+              <div class="pcard-count">17.799</div>
+              <div class="pcard-period">abertos em maio/26 · 17.192 abr · 21.048 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Clientes que abriram ao menos um e-mail no mês. Canal mais consistente da base — estável entre 17k–21k. Alta receptividade a comunicações. Leve queda indica necessidade de revisão de frequência e assuntos.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>46%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:46%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-mail"></i> E-mail</span>
+            <span class="pcard-tag">CRM ativo</span>
+            <span class="pcard-tag">Alta receptividade</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Segmentar por RFM · A/B test em assunto e horário</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#059669">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-star"></i></div>
+            <div>
+              <div class="pcard-name">Super Ativo no App</div>
+              <div class="pcard-count">11.649</div>
+              <div class="pcard-period">5+ aberturas em maio/26 · 10.150 abr · 6.300 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Usuários que abriram o app 5 ou mais vezes no mês. Perfil de maior engajamento digital — cresceu 85% em 2 meses. Público premium para notificações push e programas VIP.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>30%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:30%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-star"></i> Power user</span>
+            <span class="pcard-tag">Alta LTV</span>
+            <span class="pcard-tag">Push receptivo</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Programa de fidelidade · notificações exclusivas · beta tester</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#7c3aed">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-repeat"></i></div>
+            <div>
+              <div class="pcard-name">Usuário Regular do App</div>
+              <div class="pcard-count">17.796</div>
+              <div class="pcard-period">2–4 aberturas em maio/26 · 19.291 abr · 11.401 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Usuários com frequência moderada no app. Maior grupo de frequência controlada. Alta potencial para migrar para "Super Ativo" — candidatos ideais a jornadas de ativação.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>46%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:46%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag">App 2–4x/mês</span>
+            <span class="pcard-tag">Potencial upgrade</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Jornadas de ativação para aumentar frequência de uso</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#0891b2">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-download"></i></div>
+            <div>
+              <div class="pcard-name">Novo Usuário Digital</div>
+              <div class="pcard-count">23.742</div>
+              <div class="pcard-period">instalações em maio/26 · 15.080 abr · 9.155 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Clientes que instalaram o app no mês. Crescimento explosivo de 159% em 2 meses. Janela crítica de onboarding nos primeiros 7 dias — sem ativação, risco alto de desinstalação.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>62%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:62%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-sparkles"></i> Novo</span>
+            <span class="pcard-tag">Onboarding crítico</span>
+            <span class="pcard-tag">Alto volume</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Fluxo de boas-vindas nos primeiros 7 dias</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#dc2626">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-alert-circle"></i></div>
+            <div>
+              <div class="pcard-name">Em Risco de Churn</div>
+              <div class="pcard-count">6.617</div>
+              <div class="pcard-period">desinstalações em maio/26 · 8.241 abr · 6.739 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Usuários que desinstalaram o app. Taxa estável (~7% das instalações). Pico em abril sugere correlação com volume de notificações. Potencial de reengajamento por e-mail.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>17%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:17%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-x"></i> Churn app</span>
+            <span class="pcard-tag">Reengajamento</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Campanha de win-back via e-mail com incentivo após 30 dias</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#d97706">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-wifi"></i></div>
+            <div>
+              <div class="pcard-name">Frequentador por WiFi</div>
+              <div class="pcard-count">16.479</div>
+              <div class="pcard-period">conectados em maio/26 · 13.422 abr · 12.699 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Visitantes físicos identificados via WiFi do shopping. Crescimento de 30% em 2 meses — indica aumento de fluxo ou maior adoção do recurso. Dado omnichannel valioso para geo-targeting.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>43%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:43%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-wifi"></i> Presença física</span>
+            <span class="pcard-tag">Omnichannel</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Push de boas-vindas e oferta no momento da visita</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#0f766e">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-car"></i></div>
+            <div>
+              <div class="pcard-name">Motorista Premium</div>
+              <div class="pcard-count">37.501</div>
+              <div class="pcard-period">fidelizados no estacionamento · base acumulada</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Maior base de serviço identificado. Clientes com tag de estacionamento fidelizado — indicam visitas recorrentes de carro. Alta renda, ticket médio elevado e frequência regular.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>97%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:97%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-car"></i> Estacionamento</span>
+            <span class="pcard-tag">Alta renda</span>
+            <span class="pcard-tag">Frequente</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Benefícios exclusivos de mobilidade e programa VIP</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#9333ea">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-movie"></i></div>
+            <div>
+              <div class="pcard-name">Cinéfilo</div>
+              <div class="pcard-count">29.409</div>
+              <div class="pcard-period">jornada de cinema maio/26 · 26.901 abr · 24.265 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Visitantes que percorreram a jornada de cinema. Maior segmento de entretenimento e o de crescimento mais consistente. Produto âncora do shopping — forte poder de tração de fluxo.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>76%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:76%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-movie"></i> Cinema</span>
+            <span class="pcard-tag">Entretenimento</span>
+            <span class="pcard-tag">Alto engajamento</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Combos cinema + gastronomia · pré-venda digital exclusiva</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#ec4899">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-baby-carriage"></i></div>
+            <div>
+              <div class="pcard-name">Família com Bebê</div>
+              <div class="pcard-count">1.299</div>
+              <div class="pcard-period">média mensal · 1.331 mar · 1.228 abr · 1.337 mai</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Clientes que utilizaram o serviço de carrinho de bebê. Base consistente (~1.300/mês). Perfil de família jovem, alta renda relativa, interesse em puericultura, moda infantil e entretenimento familiar.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>3%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:3%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-heart"></i> Família</span>
+            <span class="pcard-tag">Bebê</span>
+            <span class="pcard-tag">Serviço físico</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Campanhas em datas sazonais — dia das mães, crianças</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#15803d">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-paw"></i></div>
+            <div>
+              <div class="pcard-name">Tutor de Pet</div>
+              <div class="pcard-count">94</div>
+              <div class="pcard-period">PetMar mai/26 (41 grandes + 53 pequenos)</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Clientes do PetMar. Base pequena mas altamente qualificada — visitantes recorrentes com ticket médio premium. Dos 41 tutores de pet grande (maio), apenas 30 possuem UUID Salesforce.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>0,3%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:0.3%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-paw"></i> PetMar</span>
+            <span class="pcard-tag">Alta lealdade</span>
+            <span class="pcard-tag">Nicho premium</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Conteúdo especializado e promoções PetMar exclusivas</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#2563eb">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-wheelchair"></i></div>
+            <div>
+              <div class="pcard-name">Usuário de Acessibilidade</div>
+              <div class="pcard-count">907</div>
+              <div class="pcard-period">média mensal · 942 mar · 876 abr · 902 mai</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Clientes que utilizaram cadeira de rodas do shopping. Base estável com leve oscilação. Perfil que valoriza infraestrutura de acessibilidade e conforto. Requer comunicação adaptada e inclusiva.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>2%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:2%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag">Acessibilidade</span>
+            <span class="pcard-tag">Inclusão</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Mapa de acessibilidade e comunicação inclusiva</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#ea580c">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-calendar-event"></i></div>
+            <div>
+              <div class="pcard-name">Engajado em Eventos</div>
+              <div class="pcard-count">33</div>
+              <div class="pcard-period">participantes mai/26 · 4 abr · 19 mar ⚠️</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Clientes com tag de participação em eventos. Números suspeitos — possível subintegração do módulo de eventos no Insider. Dado deve ser validado com a equipe de marketing antes de usar.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Volume relativo à maior base</span><span>0,1%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:0.1%"></div></div>
+          </div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-alert-triangle"></i> Dado suspeito</span>
+            <span class="pcard-tag">Validar integração</span>
+          </div>
+          <div class="pcard-action"><i class="ti ti-alert-circle"></i> Verificar rastreamento de eventos no Insider</div>
+        </div>
+      </div>
+
+    </div><!-- /ins-grid -->
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">Evolução do Engajamento Digital</div>
+        <div class="chart-card-sub">E-mail aberto · App 5+ · WiFi — março a maio 2026</div>
+        <div class="chart-wrap"><canvas id="chart-evolucao"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Distribuição de Personas por Volume</div>
+        <div class="chart-card-sub">Principais segmentos — maio 2026</div>
+        <div class="chart-wrap"><canvas id="chart-donut"></canvas></div>
       </div>
     </div>
-  </main>
+  </div><!-- /tab visão geral -->
 
-  <footer class="footer">Marketing e Experiência do Cliente · JCPM Shoppings · 2026</footer>
+  <!-- ════ TAB: ENGAJAMENTO DIGITAL ════ -->
+  <div id="tab-digital" class="tab-panel">
+    <div class="section-header">
+      <div class="section-title">Engajamento Digital</div>
+      <div class="section-desc">Análise detalhada dos canais digitais: e-mail, push notification e app mobile</div>
+    </div>
 
+    <div class="ins-grid">
+      <div class="pcard" style="--pc:#1a56db">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-mail"></i></div>
+            <div>
+              <div class="pcard-name">Abriu E-mail</div>
+              <div class="pcard-count">17.799</div>
+              <div class="pcard-period">mai · 17.192 abr · 21.048 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Canal mais consistente. Queda de março para abr/mai indica possível fadiga ou mudança de frequência de envio. Recomendado testar horários, assuntos e personalização por segmento.</div>
+          <div class="pcard-tags"><span class="pcard-tag">E-mail</span><span class="pcard-tag">CRM ativo</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> A/B test em assunto, horário e conteúdo</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#7c3aed">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-bell"></i></div>
+            <div>
+              <div class="pcard-name">Abriu Push Notification</div>
+              <div class="pcard-count">2.893</div>
+              <div class="pcard-period">mai · 3.465 abr · 2.122 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Push com pico em abril e retração em maio. Canal de menor alcance mas alta intenção — quem permite push tem interesse elevado. Ideal para promoções com urgência temporal.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Push</span><span class="pcard-tag">Alta intenção</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Push contextual baseado em comportamento recente</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#0891b2">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-download"></i></div>
+            <div>
+              <div class="pcard-name">Instalou App</div>
+              <div class="pcard-count">23.742</div>
+              <div class="pcard-period">mai · 15.080 abr · 9.155 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Crescimento explosivo de novas instalações — triplicou em 2 meses. Pode refletir campanha de aquisição ou sazonalidade. Atenção: nem todos convertem para uso ativo sem onboarding efetivo.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Instalação</span><span class="pcard-tag">Onboarding</span><span class="pcard-tag">+159%</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Fluxo de boas-vindas automatizado nos 7 primeiros dias</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#dc2626">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-trash"></i></div>
+            <div>
+              <div class="pcard-name">Desinstalou App</div>
+              <div class="pcard-count">6.617</div>
+              <div class="pcard-period">mai · 8.241 abr · 6.739 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Taxa de churn estável (~7%). Pico em abril sugere correlação com maior volume de notificações naquele mês. Monitorar razões de saída e ajustar cadência de comunicação push.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Churn app</span><span class="pcard-tag">Win-back</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Reengajamento via e-mail com incentivo após 30 dias</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#059669">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-star"></i></div>
+            <div>
+              <div class="pcard-name">App 5+ Aberturas / Mês</div>
+              <div class="pcard-count">11.649</div>
+              <div class="pcard-period">mai · 10.150 abr · 6.300 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Crescimento de 85% em 2 meses. Público ideal para beta de novos recursos, programa de embaixadores e comunicações premium. Maior engajamento = maior propensão a compra.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Power user</span><span class="pcard-tag">Alta LTV</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Beta testing, feedback qualitativo e programa VIP</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#f59e0b">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-apps"></i></div>
+            <div>
+              <div class="pcard-name">App — Uso Casual (1x)</div>
+              <div class="pcard-count">11.224</div>
+              <div class="pcard-period">mai · 14.357 abr · 9.795 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Usuários que abriram o app apenas uma vez no mês. Baixo engajamento — janela de ativação crítica: sem ação no 1º mês, probabilidade de desinstalação aumenta significativamente.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Baixo engajamento</span><span class="pcard-tag">Ativar urgente</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Sequência push + e-mail nos 7 primeiros dias</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">Funil de Engajamento no App — Maio/26</div>
+        <div class="chart-card-sub">Volume por nível de frequência de uso</div>
+        <div class="chart-wrap"><canvas id="chart-funil"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Instalações vs. Desinstalações</div>
+        <div class="chart-card-sub">Net growth do app — março a maio 2026</div>
+        <div class="chart-wrap"><canvas id="chart-install"></canvas></div>
+      </div>
+    </div>
+  </div><!-- /tab digital -->
+
+  <!-- ════ TAB: PRESENÇA FÍSICA ════ -->
+  <div id="tab-presenca" class="tab-panel">
+    <div class="section-header">
+      <div class="section-title">Presença Física</div>
+      <div class="section-desc">Visitantes identificados por WiFi, estacionamento e serviços presenciais do shopping</div>
+    </div>
+
+    <div class="ins-grid">
+      <div class="pcard" style="--pc:#d97706">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-wifi"></i></div>
+            <div>
+              <div class="pcard-name">Frequentador WiFi</div>
+              <div class="pcard-count">16.479</div>
+              <div class="pcard-period">mai · 13.422 abr · 12.699 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Visitantes identificados pela conexão ao WiFi. Base crescendo +30% — indica aumento de fluxo físico ou maior adoção do recurso. Dado omnichannel valioso para geo-targeting em tempo real.</div>
+          <div class="pcard-tags"><span class="pcard-tag"><i class="ti ti-wifi"></i> WiFi</span><span class="pcard-tag">Geo-targeting</span><span class="pcard-tag">+30%</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Push de boas-vindas ao conectar + oferta contextual</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#0f766e">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-car"></i></div>
+            <div>
+              <div class="pcard-name">Motorista Fidelizado</div>
+              <div class="pcard-count">37.501</div>
+              <div class="pcard-period">total acumulado</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Maior base de serviço identificado. Clientes com tag de estacionamento fidelizado — visitas recorrentes de carro. Alta renda presumida, ideal para benefícios de mobilidade e parcerias.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Estacionamento</span><span class="pcard-tag">Recorrente</span><span class="pcard-tag">Alta renda</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Vantagens no estacionamento e integração com app</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#1d4ed8">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-ticket"></i></div>
+            <div>
+              <div class="pcard-name">Pagou Estac. pelo App</div>
+              <div class="pcard-count">2.440</div>
+              <div class="pcard-period">mai · 2.038 abr · 1.840 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Usuários que pagaram o estacionamento diretamente pelo app. Crescimento de 32,6% — perfil tech-savvy com alto nível de integração digital-físico. Segmento de maior LTV potencial.</div>
+          <div class="pcard-tags"><span class="pcard-tag">App + físico</span><span class="pcard-tag">Pagamento digital</span><span class="pcard-tag">+32%</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Cashback e benefícios exclusivos no pagamento pelo app</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#9333ea">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-movie"></i></div>
+            <div>
+              <div class="pcard-name">Cinéfilo — Jornada</div>
+              <div class="pcard-count">29.409</div>
+              <div class="pcard-period">mai · 26.901 abr · 24.265 mar</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Visitantes que percorreram a jornada de cinema. Crescimento consistente — produto âncora do shopping. Ingresso comprado pelo app saltou de 171 (mar) para 1.269 (mai) = +642%.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Cinema</span><span class="pcard-tag">Entretenimento</span><span class="pcard-tag">Âncora</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Combo cinema + restaurante e pré-venda pelo app</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#ec4899">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-baby-carriage"></i></div>
+            <div>
+              <div class="pcard-name">Família com Bebê</div>
+              <div class="pcard-count">1.299</div>
+              <div class="pcard-period">média mensal · 1.331 mar · 1.228 abr · 1.337 mai</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Base consistente (~1.300/mês). Famílias jovens identificadas pelo serviço de carrinho. Alta propensão a consumo em lojas infantis, alimentação, cinema e entretenimento familiar.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Família</span><span class="pcard-tag">Infantil</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Programação familiar e promoções sazonais</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#2563eb">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-wheelchair"></i></div>
+            <div>
+              <div class="pcard-name">Usuário de Acessibilidade</div>
+              <div class="pcard-count">907</div>
+              <div class="pcard-period">média mensal · 942 mar · 876 abr · 902 mai</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Base estável com leve oscilação (942 → 876 → 902). Público que valoriza infraestrutura de acessibilidade. Comunicação deve ser inclusiva e destacar todos os recursos de apoio disponíveis.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Acessibilidade</span><span class="pcard-tag">Inclusão</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Mapa de acessibilidade e comunicação inclusiva</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">Serviços Físicos — Evolução Mensal</div>
+        <div class="chart-card-sub">WiFi, Pagou App (ticket), Carrinho de Bebê, Cadeira de Rodas</div>
+        <div class="chart-wrap"><canvas id="chart-servicos"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Cinema — Alcance vs. Conversão em Ingresso</div>
+        <div class="chart-card-sub">Jornada de cinema vs. compra de ingresso — mar a mai 2026</div>
+        <div class="chart-wrap"><canvas id="chart-cinema"></canvas></div>
+      </div>
+    </div>
+  </div><!-- /tab presença -->
+
+  <!-- ════ TAB: PERFIL DEMOGRÁFICO ════ -->
+  <div id="tab-demografico" class="tab-panel">
+    <div class="section-header">
+      <div class="section-title">Perfil Demográfico</div>
+      <div class="section-desc">Gênero, idade e interesses declarados — clientes com opt-in no CRM</div>
+    </div>
+
+    <div class="alert alert-warning">
+      <i class="ti ti-info-circle" style="font-size:16px;flex-shrink:0;margin-top:2px"></i>
+      <span><strong>Dados de opt-in:</strong> os números abaixo refletem apenas clientes que forneceram dados voluntariamente. A base total do CRM é significativamente maior — estes são os que autorizaram coleta de perfil no app.</span>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Total com Perfil de Idade</div>
+        <div class="kpi-value">385.565</div>
+        <div class="kpi-sub">Maior base com atributo único</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Mulheres (opt-in)</div>
+        <div class="kpi-value">114.420</div>
+        <div class="kpi-sub">53,7% do total com gênero</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Homens (opt-in)</div>
+        <div class="kpi-value">98.570</div>
+        <div class="kpi-sub">46,3% do total com gênero</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Com Interesses Declarados</div>
+        <div class="kpi-value">137.827</div>
+        <div class="kpi-sub">Registros (1 cliente = vários)</div>
+      </div>
+    </div>
+
+    <div class="ins-grid">
+      <div class="pcard" style="--pc:#be185d">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-woman"></i></div>
+            <div>
+              <div class="pcard-name">Perfil Feminino</div>
+              <div class="pcard-count">114.420</div>
+              <div class="pcard-period">53,7% do total opt-in</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Mulheres com opt-in de gênero. Maioria da base identificada — maior propensão a comunicações de moda, beleza e alimentação. Forte oportunidade em datas comemorativas femininas.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Share de gênero</span><span>53,7%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:53.7%"></div></div>
+          </div>
+          <div class="pcard-tags"><span class="pcard-tag"><i class="ti ti-woman"></i> Feminino</span><span class="pcard-tag">Moda</span><span class="pcard-tag">Beleza</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Campanhas segmentadas por gênero e interesse declarado</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#1d4ed8">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-man"></i></div>
+            <div>
+              <div class="pcard-name">Perfil Masculino</div>
+              <div class="pcard-count">98.570</div>
+              <div class="pcard-period">46,3% do total opt-in</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Homens com opt-in de gênero. Forte oportunidade em esportes, tecnologia, gastronomia e entretenimento. Perfil com métricas de abertura historicamente menores — requer personalização mais precisa.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Share de gênero</span><span>46,3%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:46.3%"></div></div>
+          </div>
+          <div class="pcard-tags"><span class="pcard-tag"><i class="ti ti-man"></i> Masculino</span><span class="pcard-tag">Esportes</span><span class="pcard-tag">Tecnologia</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Conteúdo segmentado por interesse declarado</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#0891b2">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-calendar"></i></div>
+            <div>
+              <div class="pcard-name">Perfil Etário Mapeado</div>
+              <div class="pcard-count">385.565</div>
+              <div class="pcard-period">clientes com data de nascimento</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Base com mês e ano de nascimento. Permite segmentação por geração (Gen Z, Millennials, Gen X, Boomers). É a maior base do projeto — dado estratégico para personalização por faixa etária.</div>
+          <div class="pcard-size-bar">
+            <div class="pcard-size-label"><span>Maior base do projeto</span><span>100%</span></div>
+            <div class="pcard-size-track"><div class="pcard-size-fill" style="width:100%"></div></div>
+          </div>
+          <div class="pcard-tags"><span class="pcard-tag">Faixa etária</span><span class="pcard-tag">Gerações</span><span class="pcard-tag">Aniversário</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Régua de aniversário e conteúdo por geração</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#7c3aed">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-heart"></i></div>
+            <div>
+              <div class="pcard-name">Interesse Declarado</div>
+              <div class="pcard-count">137.827</div>
+              <div class="pcard-period">registros totais de interesse</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Clientes que declararam interesses no app. Atenção: 1 cliente pode ter vários interesses — múltiplas linhas por UUID. Dado valioso para hiperpersonalização de comunicações e recomendações de produto.</div>
+          <div class="pcard-tags"><span class="pcard-tag">Interesses</span><span class="pcard-tag">Hiperpersonalização</span></div>
+          <div class="pcard-action"><i class="ti ti-send"></i> Recomendações de lojas e conteúdo por categoria</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">Distribuição de Gênero (opt-in)</div>
+        <div class="chart-card-sub">Base identificada: 212.990 clientes</div>
+        <div class="chart-wrap-sm"><canvas id="chart-genero"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Cobertura de Dados de Perfil</div>
+        <div class="chart-card-sub">Volume por atributo identificado no CRM</div>
+        <div class="chart-wrap-sm"><canvas id="chart-cobertura"></canvas></div>
+      </div>
+    </div>
+  </div><!-- /tab demográfico -->
+
+</div><!-- /container -->
+
+<div class="dashboard-footer">
+  Marketing e Experiência do Cliente — Grupo JCPM Shoppings · 2026
 </div>
 
 <script>
-  const SHEET_ID   = '1PdsjYfnypYEnEDIklwuXItfvQfkjWuCZ6CDSA5CViYI';
-  const HIST_SHEET = 'Historico'; 
-
-  // Mapeamento original mantido internamente por segurança de indexação
-  const C = { DATA:0, DOMINIO:1, SHOPPING:2, SPAM:3, REP:4, DKIM:5, SPF:6, DMARC:7, ULT:13 };
-
-  let currentMode = 'atual';
-  let trendsMap = {}; 
-
-  document.getElementById('hist-date').max = new Date().toISOString().split('T')[0];
-
-  function switchMode(mode) {
-    currentMode = mode;
-    document.getElementById('btn-atual').classList.toggle('active', mode === 'atual');
-    document.getElementById('btn-hist').classList.toggle('active', mode === 'historico');
-    document.getElementById('hist-controls').classList.toggle('visible', mode === 'historico');
-    if (mode === 'atual') load();
+  // ── TAB SYSTEM ──
+  function showTab(btn, name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('visible'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('visible');
+    btn.classList.add('active');
   }
 
-  function fmtDate(val) {
-    if (!val) return '—';
-    const m = String(val).match(/^Date\((\d+),(\d+),(\d+)\)$/);
-    if (m) {
-      const d = new Date(+m[1], +m[2], +m[3]);
-      return d.toLocaleDateString('pt-BR');
+  // ── CHART DEFAULTS ──
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const tc  = dark ? '#888780' : '#888780';
+  const gc  = dark ? 'rgba(240,238,234,0.08)' : 'rgba(26,25,23,0.07)';
+  const bg  = dark ? '#302f2c' : '#ffffff';
+  Chart.defaults.color = tc;
+  Chart.defaults.font.family = "'Open Sans', sans-serif";
+  Chart.defaults.font.size   = 11;
+
+  const MESES = ['Março', 'Abril', 'Maio'];
+
+  // 1 ── Evolução digital
+  new Chart(document.getElementById('chart-evolucao'), {
+    type: 'line',
+    data: {
+      labels: MESES,
+      datasets: [
+        { label:'E-mail Aberto', data:[21048,17192,17799], borderColor:'#1a56db', backgroundColor:'rgba(26,86,219,.08)', fill:true, tension:.4, pointRadius:5, borderWidth:2.5 },
+        { label:'App 5+',        data:[6300,10150,11649],  borderColor:'#059669', backgroundColor:'rgba(5,150,105,.08)',  fill:true, tension:.4, pointRadius:5, borderWidth:2.5 },
+        { label:'WiFi',          data:[12699,13422,16479], borderColor:'#d97706', backgroundColor:'rgba(217,119,6,.08)', fill:true, tension:.4, pointRadius:5, borderWidth:2.5 },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'bottom' } },
+      scales: { x:{ grid:{color:gc} }, y:{ grid:{color:gc}, ticks:{callback:v=>v.toLocaleString('pt-BR')} } }
     }
-    const d = new Date(val);
-    if (!isNaN(d)) return d.toLocaleDateString('pt-BR');
-    return val;
-  }
+  });
 
-  function fmtInputDate(str) {
-    const [y, m, d] = str.split('-');
-    return `${d}/${m}/${y}`;
-  }
-
-  async function fetchSheet(sheet, tq) {
-    // Cache buster adicionado para forçar dados em tempo real e não pegar cache antigo
-    let url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheet)}&headers=1&_cb=${Date.now()}`;
-    if (tq) url += `&tq=${encodeURIComponent(tq)}`;
-    const res  = await fetch(url);
-    const text = await res.text();
-    const m    = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);\s*$/);
-    if (!m) throw new Error('Formato inesperado. Verifique permissões ou bloqueios do navegador (CORS).');
-    const json = JSON.parse(m[1]);
-    if (json.status !== 'ok') throw new Error(json.errors?.[0]?.message || 'Erro na planilha.');
-    return json.table.rows.map(r => r.c.map(c => c?.v ?? c?.f ?? ''));
-  }
-
-  function showLoading() {
-    document.getElementById('container').innerHTML =
-      '<div class="center-state"><div class="spin"></div><span>Carregando dados estruturados...</span></div>';
-  }
-
-  function showError(msg) {
-    document.getElementById('container').innerHTML =
-      `<div class="err"><i class="ti ti-alert-triangle" style="font-size:24px;margin-bottom:8px;display:block"></i> ${msg}</div>`;
-  }
-
-  function buildTrends(histRows) {
-    trendsMap = {};
-    const histMap = {};
-    
-    histRows.forEach(r => {
-      const dateRaw = r[C.DATA];
-      const shopping = r[C.SHOPPING] || r[C.DOMINIO];
-      const rep = String(r[C.REP] || '').toUpperCase().trim();
-      
-      if (!shopping || !dateRaw) return;
-      if (!histMap[shopping]) histMap[shopping] = [];
-      
-      let d = new Date(0);
-      const m = String(dateRaw).match(/^Date\((\d+),(\d+),(\d+)\)$/);
-      if (m) { d = new Date(+m[1], +m[2], +m[3]); } 
-      else { d = new Date(dateRaw); }
-      
-      histMap[shopping].push({ date: d, rep: rep, rawDate: dateRaw });
-    });
-
-    const score = { 'ALTA': 4, 'MÉDIA': 3, 'MEDIA': 3, 'BAIXA': 2, 'RUIM': 1 };
-    
-    for (const shop in histMap) {
-      const history = histMap[shop].sort((a, b) => b.date - a.date);
-      if (history.length < 2) continue;
-
-      const currentRep = history[0].rep;
-      let changeRecord = null;
-      let previousRep = null;
-
-      for (let i = 1; i < history.length; i++) {
-        const pastRep = history[i].rep;
-        if (pastRep !== currentRep && pastRep !== 'ND' && pastRep !== 'SEM DADOS' && pastRep !== '') {
-          changeRecord = history[i - 1]; 
-          previousRep = pastRep;
-          break;
-        }
-      }
-
-      if (changeRecord && previousRep) {
-        const currScore = score[currentRep] || 0;
-        const prevScore = score[previousRep] || 0;
-        
-        if (currScore > 0 && prevScore > 0 && currScore !== prevScore) {
-          trendsMap[shop] = {
-            direction: currScore > prevScore ? 'up' : 'down',
-            date: changeRecord.rawDate
-          };
-        }
-      }
+  // 2 ── Donut distribuição
+  new Chart(document.getElementById('chart-donut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Cinema (jornada)','Estac. Fidelizado','E-mail Aberto','App Regular 2-4x','WiFi','Instalou App','App 5+','App 1x'],
+      datasets: [{ data:[29409,37501,17799,17796,16479,23742,11649,11224],
+        backgroundColor:['#9333ea','#0f766e','#1a56db','#7c3aed','#d97706','#0891b2','#059669','#f59e0b'],
+        borderWidth:2, borderColor:bg }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'55%',
+      plugins: { legend:{ position:'right', labels:{ boxWidth:12, padding:12 } } }
     }
-  }
+  });
 
-  async function load() {
-    showLoading();
-    try {
-      const [atualRows, histRows] = await Promise.all([
-        fetchSheet('Ultimo_Resultado'),
-        fetchSheet(HIST_SHEET)
-      ]);
-      buildTrends(histRows);
-      render(atualRows);
-    } catch(e) {
-      console.error(e);
-      showError(e.message);
+  // 3 ── Funil app
+  new Chart(document.getElementById('chart-funil'), {
+    type: 'bar',
+    data: {
+      labels: ['Instalou','Abriu 1x','Abriu 2–4x','Abriu 5+'],
+      datasets: [{ label:'Usuários (Mai/26)', data:[23742,11224,17796,11649],
+        backgroundColor:['#0891b2','#f59e0b','#7c3aed','#059669'], borderRadius:6 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{display:false} },
+      scales: { x:{grid:{display:false}}, y:{grid:{color:gc}, ticks:{callback:v=>v.toLocaleString('pt-BR')}} }
     }
-  }
+  });
 
-  async function loadHistory() {
-    const dateVal = document.getElementById('hist-date').value;
-    if (!dateVal) { alert('Selecione uma data para buscar o histórico.'); return; }
-    showLoading();
-    try {
-      const tq   = `SELECT * WHERE A=date '${dateVal}'`;
-      const rows = await fetchSheet(HIST_SHEET, tq);
-      if (!rows.length) {
-        showError(`Nenhum dado encontrado para ${fmtInputDate(dateVal)}.<br>Verifique se a aba "${HIST_SHEET}" existe e contém dados para essa data.`);
-        return;
-      }
-      render(rows);
-      document.getElementById('meta-time').textContent = `Histórico de ${fmtInputDate(dateVal)}`;
-    } catch(e) {
-      console.error(e);
-      showError(e.message);
+  // 4 ── Instalações vs desinstalações
+  new Chart(document.getElementById('chart-install'), {
+    type: 'bar',
+    data: {
+      labels: MESES,
+      datasets: [
+        { label:'Instalações',    data:[9155,15080,23742],            backgroundColor:'#0891b2', borderRadius:4 },
+        { label:'Desinstalações', data:[-6739,-8241,-6617],           backgroundColor:'#dc2626', borderRadius:4 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'bottom' } },
+      scales: { x:{grid:{display:false}}, y:{grid:{color:gc}, ticks:{callback:v=>v.toLocaleString('pt-BR')}} }
     }
-  }
+  });
 
-  function badge(repVal) {
-    // Normalização completa: Remove espaços, converte para maiúsculo e tira acentos (ex: "Baixa " -> "BAIXA")
-    const repRaw = String(repVal || '').toUpperCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const m = { ALTA:['heat-alta','ALTA'], MEDIA:['heat-media','MÉDIA'], BAIXA:['heat-baixa','BAIXA'], RUIM:['heat-ruim','RUIM'] };
-    const [cls, lbl] = m[repRaw] || ['heat-nd', repVal || 'ND'];
-    return `<span class="heat ${cls}">${lbl}</span>`;
-  }
+  // 5 ── Serviços físicos
+  new Chart(document.getElementById('chart-servicos'), {
+    type: 'line',
+    data: {
+      labels: MESES,
+      datasets: [
+        { label:'WiFi',            data:[12699,13422,16479], borderColor:'#d97706', backgroundColor:'transparent', tension:.4, pointRadius:5, borderWidth:2.5 },
+        { label:'Pagou App ticket',data:[1840,2038,2440],   borderColor:'#0f766e', backgroundColor:'transparent', tension:.4, pointRadius:5, borderWidth:2.5 },
+        { label:'Carrinho Bebê',   data:[1331,1228,1337],   borderColor:'#ec4899', backgroundColor:'transparent', tension:.4, pointRadius:5, borderWidth:2.5 },
+        { label:'Cadeira Rodas',   data:[942,876,902],      borderColor:'#2563eb', backgroundColor:'transparent', tension:.4, pointRadius:5, borderWidth:2.5 },
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'bottom' } },
+      scales: { x:{grid:{color:gc}}, y:{grid:{color:gc}, ticks:{callback:v=>v.toLocaleString('pt-BR')}} }
+    }
+  });
 
-  function spam(val) {
-    if (val === '' || val == null) return '<span class="dim">—</span>';
-    const n = parseFloat(val);
-    const fmt = n.toFixed(4) + '%';
-    return n > 0.3 ? `<span class="spam-alto"><i class="ti ti-alert-circle" style="font-size:12px"></i> ${fmt}</span>` : `<span class="spam-ok">${fmt}</span>`;
-  }
+  // 6 ── Cinema jornada vs ingresso
+  new Chart(document.getElementById('chart-cinema'), {
+    type: 'bar',
+    data: {
+      labels: MESES,
+      datasets: [
+        { label:'Jornada de Cinema', data:[24265,26901,29409], backgroundColor:'#9333ea', borderRadius:4 },
+        { label:'Comprou Ingresso',  data:[171,1143,1269],     backgroundColor:'#c084fc', borderRadius:4 }
+      ]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ position:'bottom' } },
+      scales: { x:{grid:{display:false}}, y:{grid:{color:gc}, ticks:{callback:v=>v.toLocaleString('pt-BR')}} }
+    }
+  });
 
-  function pct(val) {
-    const n = parseFloat(val);
-    return isNaN(n) ? '<span class="dim">—</span>' : `<span class="dim">${n.toFixed(2)}%</span>`;
-  }
-
-  function renderStatus(trendObj) {
-    if (!trendObj) return '<span class="dim">—</span>';
-    
-    let dataFormatada = '—';
-    if (trendObj.date) {
-      let d;
-      const m = String(trendObj.date).match(/^Date\((\d+),(\d+),(\d+)\)$/);
-      if (m) {
-        d = new Date(+m[1], +m[2], +m[3]);
-      } else {
-        d = new Date(trendObj.date);
-      }
-      if (!isNaN(d.getTime())) {
-        const dd = String(d.getDate()).padStart(2, '0');
-        const mm = String(d.getMonth() + 1).padStart(2, '0');
-        dataFormatada = `${dd}/${mm}`; // Retorna formato apenas DD/MM
+  // 7 ── Gênero
+  new Chart(document.getElementById('chart-genero'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Mulheres','Homens'],
+      datasets: [{ data:[114420,98570], backgroundColor:['#be185d','#1d4ed8'], borderWidth:3, borderColor:bg }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, cutout:'50%',
+      plugins: { legend:{ position:'bottom' },
+        tooltip:{ callbacks:{ label:ctx=>`${ctx.label}: ${ctx.raw.toLocaleString('pt-BR')} (${((ctx.raw/212990)*100).toFixed(1)}%)` } }
       }
     }
+  });
 
-    const htmlData = dataFormatada !== '—' ? `<span class="dim" style="margin-left:4px; font-size:10.5px">${dataFormatada}</span>` : '';
-
-    if (trendObj.direction === 'up') {
-      return `<div class="status-up"><i class="ti ti-trending-up"></i> ${htmlData}</div>`;
-    } else if (trendObj.direction === 'down') {
-      return `<div class="status-down"><i class="ti ti-trending-down"></i> ${htmlData}</div>`;
+  // 8 ── Cobertura de perfil (horizontal)
+  new Chart(document.getElementById('chart-cobertura'), {
+    type: 'bar',
+    indexAxis: 'y',
+    data: {
+      labels: ['Perfil de Idade','Mulheres opt-in','Interesses','Homens opt-in','App 5+ (mai)','WiFi (mai)'],
+      datasets: [{ label:'Clientes', data:[385565,114420,137827,98570,11649,16479],
+        backgroundColor:['#0891b2','#be185d','#7c3aed','#1d4ed8','#059669','#d97706'], borderRadius:4 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{display:false} },
+      scales: { x:{ grid:{color:gc}, ticks:{callback:v=>(v/1000).toFixed(0)+'k'} }, y:{ grid:{display:false} } }
     }
-    
-    return '<span class="dim">—</span>';
-  }
-
-  function render(rows) {
-    const dataRef = fmtDate(rows[0]?.[C.DATA]);
-    document.getElementById('meta-ref').textContent  = dataRef !== '—' ? dataRef : '—';
-    document.getElementById('meta-dom').textContent = rows.length;
-    if (currentMode === 'atual') {
-      document.getElementById('meta-time').textContent = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
-    }
-
-    document.getElementById('container').innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th>Shopping</th>
-            <th>Status</th>
-            <th>Reputação</th>
-            <th>Spam Rate</th>
-            <th>Último Report Gmail</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(r => {
-            const shopName = r[C.SHOPPING] || r[C.DOMINIO];
-            const trend = (currentMode === 'atual') ? trendsMap[shopName] : null; 
-            
-            return `
-            <tr>
-              <td class="name-col">${shopName}</td>
-              <td>${renderStatus(trend)}</td>
-              <td>${badge(r[C.REP])}</td>
-              <td>${spam(r[C.SPAM])}</td>
-              <td class="dim">${fmtDate(r[C.ULT])}</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>`;
-  }
-
-  load();
-  setInterval(() => { if (currentMode === 'atual') load(); }, 5 * 60 * 1000);
+  });
 </script>
 </body>
 </html>

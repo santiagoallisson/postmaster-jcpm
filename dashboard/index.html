@@ -323,7 +323,7 @@
         </div>
       </div>
 
-      <!-- ── 2. Participantes de Evento ── -->
+      <!-- ── 2. Participantes de Eventos ── -->
       <div class="dc-card" style="--dc:#ea580c">
         <div class="dc-bar"></div>
         <div class="dc-body">
@@ -331,34 +331,87 @@
           <div class="dc-top">
             <div class="dc-icon"><i class="ti ti-calendar-event"></i></div>
             <div>
-              <div class="dc-name">Participantes de Evento</div>
-              <div class="dc-count">33</div>
-              <div class="dc-period">mai/26 · 4 abr · 19 mar</div>
+              <div class="dc-name">Participantes de Eventos</div>
+              <div class="dc-count">65.905</div>
+              <div class="dc-period">IDs únicos com CRM · exportação Salesforce</div>
             </div>
           </div>
-          <div class="dc-warning"><i class="ti ti-alert-triangle" style="flex-shrink:0;margin-top:1px"></i> Base muito pequena — No período de estudo foram poucos eventos com identificação de clientes.</div>
+
+          <!-- badges de cobertura de eventos -->
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px">
+            <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:var(--bg-secondary);color:var(--text-secondary);border:1px solid var(--border-light)">
+              <i class="ti ti-calendar" style="font-size:10px"></i> 163 eventos cadastrados
+            </span>
+            <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(16,185,129,0.12);color:#059669;border:1px solid rgba(16,185,129,0.25)">
+              <i class="ti ti-check" style="font-size:10px"></i> 22 com inscrições CRM
+            </span>
+            <span style="font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px;background:rgba(249,115,22,0.12);color:#c2410c;border:1px solid rgba(249,115,22,0.25)">
+              <i class="ti ti-x" style="font-size:10px"></i> 141 sem captura de participantes
+            </span>
+          </div>
+
           <div class="dc-gender">
             <div class="dc-section-label">Gênero (est.)</div>
             <div class="dc-gender-track">
-              <div class="dc-gender-f" style="width:54%">♀ 54%</div>
-              <div class="dc-gender-m">♂ 46%</div>
+              <div class="dc-gender-f" style="width:58%">♀ 58%</div>
+              <div class="dc-gender-m">♂ 42%</div>
             </div>
           </div>
           <div class="dc-ages">
-            <div class="dc-section-label">Faixa etária (est.)</div>
-            <div class="dc-age-item"><div class="dc-age-name">18–29</div><div class="dc-age-track"><div class="dc-age-fill" style="width:38%"></div></div><div class="dc-age-pct">38%</div></div>
-            <div class="dc-age-item"><div class="dc-age-name">30–40</div><div class="dc-age-track"><div class="dc-age-fill" style="width:30%"></div></div><div class="dc-age-pct">30%</div></div>
-            <div class="dc-age-item"><div class="dc-age-name">41–50</div><div class="dc-age-track"><div class="dc-age-fill" style="width:18%"></div></div><div class="dc-age-pct">18%</div></div>
-            <div class="dc-age-item"><div class="dc-age-name">51–60</div><div class="dc-age-track"><div class="dc-age-fill" style="width:10%"></div></div><div class="dc-age-pct">10%</div></div>
-            <div class="dc-age-item"><div class="dc-age-name">60+</div><div class="dc-age-track"><div class="dc-age-fill" style="width:4%"></div></div><div class="dc-age-pct">4%</div></div>
+            <div class="dc-section-label">Faixa etária (est. — mix familiar e jovem adulto)</div>
+            <div class="dc-age-item"><div class="dc-age-name">18–29</div><div class="dc-age-track"><div class="dc-age-fill" style="width:28%"></div></div><div class="dc-age-pct">28%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">30–40</div><div class="dc-age-track"><div class="dc-age-fill" style="width:32%"></div></div><div class="dc-age-pct">32%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">41–50</div><div class="dc-age-track"><div class="dc-age-fill" style="width:22%"></div></div><div class="dc-age-pct">22%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">51–60</div><div class="dc-age-track"><div class="dc-age-fill" style="width:12%"></div></div><div class="dc-age-pct">12%</div></div>
+            <div class="dc-age-item"><div class="dc-age-name">60+</div><div class="dc-age-track"><div class="dc-age-fill" style="width:6%"></div></div><div class="dc-age-pct">6%</div></div>
           </div>
           <div class="dc-attrs">
-            <div class="dc-attr"><div class="dc-attr-label">Tem app</div><div class="dc-attr-value">~62%</div><div class="dc-attr-note">est.</div></div>
-            <div class="dc-attr"><div class="dc-attr-label">CRM ativo (e-mail)</div><div class="dc-attr-value">~58%</div><div class="dc-attr-note">est.</div></div>
-            <div class="dc-attr"><div class="dc-attr-label">Usa estacionamento</div><div class="dc-attr-value">~42%</div><div class="dc-attr-note">est.</div></div>
-            <div class="dc-attr"><div class="dc-attr-label">Conecta WiFi</div><div class="dc-attr-value">~75%</div><div class="dc-attr-note">est. — alta presença física</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Tem app</div><div class="dc-attr-value">~45%</div><div class="dc-attr-note">est.</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Conecta WiFi</div><div class="dc-attr-value">~72%</div><div class="dc-attr-note">est. — alta presença física</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Visitou PetMar</div><div class="dc-attr-value">~157</div><div class="dc-attr-note real">real · 3 eventos raça/pet</div></div>
+            <div class="dc-attr"><div class="dc-attr-label">Engaj. CRM (e-mail/push)</div><div class="dc-attr-value">~12%</div><div class="dc-attr-note">est. — público engajado</div></div>
           </div>
-          <div class="dc-disclaimer">⚠️ Todos os valores são estimativas. Segmento requer validação de integração no Insider antes de qualquer uso estratégico.</div>
+
+          <!-- top eventos -->
+          <div style="margin-bottom:12px">
+            <div class="dc-section-label">Maiores eventos por participantes identificados</div>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">Encantos de Natal RioMar</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">30.378</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">Mundo dos Dinossauros — Recarga 2024</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">32.122</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">Mundo dos Dinossauros RioMar</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">5.638</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">Dia dos Pais — Adilson Ramos</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">1.659</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">Dia do Solteiro c/ Banda Labaredas</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">1.277</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">Festival de Literatura RioMar</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">816</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">KPop Love</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">775</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+                <span style="color:var(--text-secondary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px">Meet&amp;Greet Bolofofos</span>
+                <span style="font-weight:700;color:var(--dc);flex-shrink:0">695</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dc-disclaimer">141 eventos sem captura de participantes no CRM sinalizam oportunidade crítica de estruturação do processo de inscrição. Dados históricos — inclui eventos de 2024.</div>
         </div>
       </div>
 

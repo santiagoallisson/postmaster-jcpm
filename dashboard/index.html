@@ -1556,37 +1556,6 @@
 
   const MESES = ['Março', 'Abril', 'Maio'];
 
-  // 1 ── Evolução digital
-  new Chart(document.getElementById('chart-evolucao'), {
-    type: 'line',
-    data: {
-      labels: MESES,
-      datasets: [
-        { label:'E-mail Aberto', data:[21048,17192,17799], borderColor:'#1a56db', backgroundColor:'rgba(26,86,219,.08)', fill:true, tension:.4, pointRadius:5, borderWidth:2.5 },
-        { label:'App 5+',        data:[6300,10150,11649],  borderColor:'#059669', backgroundColor:'rgba(5,150,105,.08)',  fill:true, tension:.4, pointRadius:5, borderWidth:2.5 },
-        { label:'WiFi',          data:[12699,13422,16479], borderColor:'#d97706', backgroundColor:'rgba(217,119,6,.08)', fill:true, tension:.4, pointRadius:5, borderWidth:2.5 },
-      ]
-    },
-    options: { responsive:true, maintainAspectRatio:false,
-      plugins: { legend:{ position:'bottom' } },
-      scales: { x:{ grid:{color:gc} }, y:{ grid:{color:gc}, ticks:{callback:v=>v.toLocaleString('pt-BR')} } }
-    }
-  });
-
-  // 2 ── Donut distribuição
-  new Chart(document.getElementById('chart-donut'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Cinema (jornada)','Estac. Fidelizado','E-mail Aberto','App Regular 2-4x','WiFi','Instalou App','App 5+','App 1x'],
-      datasets: [{ data:[29409,37501,17799,17796,16479,23742,11649,11224],
-        backgroundColor:['#9333ea','#0f766e','#1a56db','#7c3aed','#d97706','#0891b2','#059669','#f59e0b'],
-        borderWidth:2, borderColor:bg }]
-    },
-    options: { responsive:true, maintainAspectRatio:false, cutout:'55%',
-      plugins: { legend:{ position:'right', labels:{ boxWidth:12, padding:12 } } }
-    }
-  });
-
   // 3 ── Funil app
   new Chart(document.getElementById('chart-funil'), {
     type: 'bar',

@@ -250,27 +250,26 @@
       <div class="hero-stats">
         <div class="hero-stat">
           <div class="hero-stat-value">385.565</div>
-          <div class="hero-stat-label">Clientes com perfil de idade (opt-in)</div>
+          <div class="hero-stat-label">Base acionável</div>
         </div>
         <div class="hero-stat">
-          <div class="hero-stat-value">212.990</div>
-          <div class="hero-stat-label">Opt-in de gênero identificado</div>
-          <div class="hero-stat-delta">114.420 mulheres · 98.570 homens</div>
+          <div class="hero-stat-value">114.420</div>
+          <div class="hero-stat-label">Mulheres identificadas no CRM</div>
         </div>
         <div class="hero-stat">
-          <div class="hero-stat-value">170.659</div>
-          <div class="hero-stat-label">Têm app instalado (base total)</div>
-          <div class="hero-stat-pct">40.669 ativos em Mai/26</div>
+          <div class="hero-stat-value">98.570</div>
+          <div class="hero-stat-label">Homens identificados no CRM</div>
+        </div>
+        
+        <div class="hero-stat">
+          <div class="hero-stat-value">24.655</div>
+          <div class="hero-stat-label">Abriram e-mail Mar–Mai 2026</div>
+          <div class="hero-stat-pct">74,1% de recorrência · 53% nos 3 meses</div>
         </div>
         <div class="hero-stat">
-          <div class="hero-stat-value">17.788</div>
-          <div class="hero-stat-label">Abriram e-mail em Mai/26</div>
-          <div class="hero-stat-pct">4,6% do opt-in</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">65.905</div>
-          <div class="hero-stat-label">Participaram de eventos (base histórica)</div>
-          <div class="hero-stat-pct">17,1% do opt-in</div>
+          <div class="hero-stat-value">163</div>
+          <div class="hero-stat-label">Eventos cadastrados no CRM</div>
+          <div class="hero-stat-pct">22 com inscrições · 65.905 participantes histórico</div>
         </div>
       </div>
     </div>
@@ -280,7 +279,6 @@
   <section class="destaque-section">
     <div class="section-header">
       <div class="section-title"><i class="ti ti-star-filled" style="color:var(--warning)"></i> Personas em Destaque</div>
-      <div class="section-desc">Públicos estratégicos com análise cruzada de perfil. Atributos com dados diretos derivam de cruzamentos entre segmentos do Insider/Salesforce. Gênero e idade refletem os registros declarados no CRM — cobertura parcial (~75–82% para idade, ~20% para gênero).</div>
     </div>
     <div class="destaque-grid">
 
@@ -907,7 +905,6 @@
           <div class="pcard-email">
             <span class="pcard-email-item email-recv">Abriu e-mail 11,7% · MÉDIA · 4.380 de 37.501</span>
           </div>
-          <div class="pcard-action"><i class="ti ti-send"></i> Benefícios exclusivos de mobilidade e programa VIP</div>
         </div>
       </div>
 
@@ -935,7 +932,6 @@
           <div class="pcard-email">
             <span class="pcard-email-item email-recv">Sem cruzamento UUID disponível</span>
           </div>
-          <div class="pcard-action"><i class="ti ti-send"></i> Combos cinema + gastronomia · pré-venda digital exclusiva</div>
         </div>
       </div>
 
@@ -963,7 +959,6 @@
           <div class="pcard-email">
             <span class="pcard-email-item email-recv">Abriu e-mail 6,0% · BAIXA · 207 de 3.439</span>
           </div>
-          <div class="pcard-action"><i class="ti ti-send"></i> Campanhas em datas sazonais — dia das mães, crianças</div>
         </div>
       </div>
 
@@ -1076,24 +1071,81 @@
           <div class="pcard-email">
             <span class="pcard-email-item email-recv">Abriu e-mail 13,6% · MÉDIA · 518 de 3.815</span>
           </div>
-          <div class="pcard-action"><i class="ti ti-send"></i> Ativar via app · cashback estacionamento · benefícios TAG</div>
+        </div>
+      </div>
+
+      <div class="pcard" style="--pc:#7c3aed">
+        <div class="pcard-bar"></div>
+        <div class="pcard-body">
+          <div class="pcard-header">
+            <div class="pcard-icon"><i class="ti ti-heart"></i></div>
+            <div>
+              <div class="pcard-name">Interesses Declarados</div>
+              <div class="pcard-count">137.736</div>
+              <div class="pcard-period">clientes com interesse declarado (35,8% do opt-in)</div>
+            </div>
+          </div>
+          <div class="pcard-desc">Top 5 interesses declarados pelos clientes no CRM, com volume, representatividade na base opt-in e taxa de abertura de e-mail Mar–Mai 2026.</div>
+          <div class="pcard-tags">
+            <span class="pcard-tag"><i class="ti ti-heart"></i> Interesses CRM</span>
+            <span class="pcard-tag">Insider</span>
+          </div>
+          <div style="margin-top:12px">
+            <div style="font-size:11px;font-weight:600;color:var(--text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Ranking de interesses</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr style="color:var(--text-tertiary);border-bottom:1px solid var(--border-light)">
+                  <th style="text-align:left;padding:4px 0;font-weight:600">#</th>
+                  <th style="text-align:left;padding:4px 6px;font-weight:600">Interesse</th>
+                  <th style="text-align:right;padding:4px 0;font-weight:600">Clientes</th>
+                  <th style="text-align:right;padding:4px 0;font-weight:600">% base</th>
+                  <th style="text-align:right;padding:4px 0;font-weight:600">E-mail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid var(--border-light)">
+                  <td style="padding:6px 0;color:var(--text-tertiary)">1</td>
+                  <td style="padding:6px 6px;color:var(--text-primary);font-weight:500">Eventos em geral</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-primary)">132.774</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">34,5%</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">5,3%</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-light)">
+                  <td style="padding:6px 0;color:var(--text-tertiary)">2</td>
+                  <td style="padding:6px 6px;color:var(--text-primary);font-weight:500">Cinema</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-primary)">1.611</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">0,4%</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">7,3%</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-light)">
+                  <td style="padding:6px 0;color:var(--text-tertiary)">3</td>
+                  <td style="padding:6px 6px;color:var(--text-primary);font-weight:500">Moda</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-primary)">1.512</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">0,4%</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">8,1%</td>
+                </tr>
+                <tr style="border-bottom:1px solid var(--border-light)">
+                  <td style="padding:6px 0;color:var(--text-tertiary)">4</td>
+                  <td style="padding:6px 6px;color:var(--text-primary);font-weight:500">Atividades e Eventos Infantis</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-primary)">1.420</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">0,4%</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">5,5%</td>
+                </tr>
+                <tr>
+                  <td style="padding:6px 0;color:var(--text-tertiary)">5</td>
+                  <td style="padding:6px 6px;color:var(--text-primary);font-weight:500">Música</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-primary)">1.393</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">0,4%</td>
+                  <td style="text-align:right;padding:6px 0;color:var(--text-secondary)">6,1%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
     </div><!-- /ins-grid -->
 
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-card-title">Evolução do Engajamento Digital</div>
-        <div class="chart-card-sub">E-mail aberto · App 5+ · WiFi — março a maio 2026</div>
-        <div class="chart-wrap"><canvas id="chart-evolucao"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-title">Distribuição de Personas por Volume</div>
-        <div class="chart-card-sub">Principais segmentos — maio 2026</div>
-        <div class="chart-wrap"><canvas id="chart-donut"></canvas></div>
-      </div>
-    </div>
   </div><!-- /tab visão geral -->
 
   <!-- ════ TAB: ENGAJAMENTO DIGITAL ════ -->
@@ -1466,7 +1518,7 @@
     <div class="charts-grid">
       <div class="chart-card">
         <div class="chart-card-title">Distribuição de Gênero (opt-in)</div>
-        <div class="chart-card-sub">Base identificada: 212.990 clientes</div>
+        <div class="chart-card-sub">Base identificada: 212.990 clientes com gênero declarado (114.420 ♀ · 98.570 ♂)</div>
         <div class="chart-wrap-sm"><canvas id="chart-genero"></canvas></div>
       </div>
       <div class="chart-card">
@@ -1486,10 +1538,11 @@
 <script>
   // ── TAB SYSTEM ──
   function showTab(btn, name) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('visible'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('visible');
     btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('visible'));
+    var panel = document.getElementById('tab-' + name);
+    if (panel) panel.classList.add('visible');
   }
 
   // ── CHART DEFAULTS ──
